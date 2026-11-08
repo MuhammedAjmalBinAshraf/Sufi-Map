@@ -5,8 +5,12 @@
     "searchPlaceholder": "Search maqams, dargahs, zawiyas...",
     "directions": "Directions",
     "save": "Save",
+    "saved": "Saved",
     "suggestEdit": "Suggest edit",
-    "language": "Language"
+    "language": "Language",
+    "verifiedSource": "Verified Source",
+    "share": "Share",
+    "close": "Close"
   },
   "nav": {
     "map": "Map",
@@ -25,6 +29,34 @@
     "welcome": "Peace be upon you",
     "intro": "A serene sanctuary-like guide to Sufi heritage in West Malappuram, Kerala.",
     "exploreMap": "Open Map",
-    "contributeCTA": "Add a Sacred Place"
+    "contributeCTA": "Add a Sacred Place",
+    "viewOnMap": "View on Map",
+    "openDetails": "View Details"
+  },
+  "place": {
+    "history": "History & Spiritual Significance",
+    "etiquette": "Visiting Etiquette",
+    "events": "Recurring Events & Gatherings",
+    "sources": "Verified Historical Sources",
+    "viewDetails": "Full Sanctuary Page",
+    "backToMap": "Back to Map",
+    "coordinates": "Coordinates",
+    "area": "Area"
+  },
+  "person": {
+    "presence": "Public Presence & Teaching Schedule",
+    "livingBadge": "Living Scholar & Guide",
+    "consentGranted": "Consent Verified",
+    "requestRemoval": "Request Edit or Removal",
+    "teachingVenue": "Public Gathering Venue",
+    "noHomeWarning": "Notice: In accordance with our ethical safety guidelines, only public gathering spaces (masjids, zawiyas, public halls) are published. Private residences are never disclosed.",
+    "schedule": "Schedule & Times",
+    "biography": "Short Biography",
+    "back": "Back"
+  },
+  "gatherings": {
+    "title": "Public Gatherings & Halqas",
+    "subtitle": "Weekly study circles, majlis al-dhikr, and public gatherings in Malappuram",
+    "at": "at"
   }
 }
