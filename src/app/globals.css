@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Sahn Design System Tokens */
+    --background: 50 33% 97%;          /* #FAF9F4 - Warm sanctuary canvas */
+    --foreground: 120 8% 8%;           /* #121512 - Deep charcoal ink */
+
+    --card: 0 0% 100%;                 /* #FFFFFF - Crisp white cards */
+    --card-foreground: 120 8% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 120 8% 8%;
+
+    --primary: 147 50% 24%;            /* #1F5C3A - Deep sanctuary green */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 50 15% 92%;           /* Subtle warm stone */
+    --secondary-foreground: 120 8% 8%;
+
+    --muted: 50 12% 92%;
+    --muted-foreground: 132 5% 38%;    /* #5D675F - Muted text */
+
+    --accent: 50 20% 93%;
+    --accent-foreground: 147 50% 24%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 50 19% 87%;              /* #E4E2D8 - Warm border */
+    --input: 50 19% 87%;
+    --ring: 147 50% 24%;
+
+    --radius: 0.875rem;                /* 14px - Sanctuary corner radius */
+
+    --map-background: 75 22% 93%;      /* #EEF0E6 */
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-color: #FAF9F4;
+    color: #121512;
+    min-height: 100vh;
+  }
+}
+
+/* Reduced motion compliance */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* RTL layout adjustments for Arabic script */
+[dir="rtl"] {
+  text-align: right;
+  font-family: var(--font-arabic), "Amiri", serif;
+}
+
+[dir="rtl"] .font-serif {
+  font-family: var(--font-arabic), "Amiri", serif;
+}

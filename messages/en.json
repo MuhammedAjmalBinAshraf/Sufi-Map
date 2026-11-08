@@ -1,0 +1,30 @@
+{
+  "common": {
+    "title": "Sufi Map",
+    "tagline": "Sacred sanctuaries and public gatherings of Malappuram",
+    "searchPlaceholder": "Search maqams, dargahs, zawiyas...",
+    "directions": "Directions",
+    "save": "Save",
+    "suggestEdit": "Suggest edit",
+    "language": "Language"
+  },
+  "nav": {
+    "map": "Map",
+    "gatherings": "Gatherings",
+    "contribute": "Contribute",
+    "me": "Me"
+  },
+  "filters": {
+    "all": "All",
+    "maqam": "Maqams",
+    "dargah": "Dargahs",
+    "zawiya": "Zawiyas",
+    "gathering": "Gatherings"
+  },
+  "home": {
+    "welcome": "Peace be upon you",
+    "intro": "A serene sanctuary-like guide to Sufi heritage in West Malappuram, Kerala.",
+    "exploreMap": "Open Map",
+    "contributeCTA": "Add a Sacred Place"
+  }
+}
