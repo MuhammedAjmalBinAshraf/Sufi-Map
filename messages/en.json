@@ -10,7 +10,11 @@
     "language": "Language",
     "verifiedSource": "Verified Source",
     "share": "Share",
-    "close": "Close"
+    "close": "Close",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "uploading": "Uploading...",
+    "loading": "Loading..."
   },
   "nav": {
     "map": "Map",
@@ -58,5 +62,52 @@
     "title": "Public Gatherings & Halqas",
     "subtitle": "Weekly study circles, majlis al-dhikr, and public gatherings in Malappuram",
     "at": "at"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Create Contributor Account",
+    "email": "Email Address",
+    "password": "Password",
+    "fullName": "Your Name",
+    "signOut": "Sign Out",
+    "guestMode": "Guest Contributor",
+    "loginPrompt": "Sign in with your email to submit places, suggest corrections, and earn contributor badges.",
+    "alreadyHaveAccount": "Already registered? Sign In",
+    "needAccount": "Need an account? Sign Up"
+  },
+  "contribute": {
+    "title": "Contribute to Sufi Map",
+    "subtitle": "Help document sacred sanctuaries and gatherings with wisdom and verified accuracy.",
+    "tabPlace": "Add Place",
+    "tabGathering": "Add Gathering",
+    "tabPerson": "Add Person",
+    "tabCorrection": "Suggest Edit",
+    "nameEn": "Name (English)",
+    "nameMl": "Name (Malayalam)",
+    "nameAr": "Name (Arabic)",
+    "kind": "Sanctuary Kind",
+    "area": "Area (e.g. Tirurangadi, West Malappuram)",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "shortHistory": "Short History (2 to 3 lines)",
+    "visitingEtiquette": "Visiting Etiquette",
+    "recurringEvents": "Recurring Events (Weekly / Monthly)",
+    "sourceTitle": "Source Title (Book, Elder, or Record)",
+    "sourceAuthor": "Author or Named Local Elder",
+    "sourceNote": "Mandatory: Every entry must have at least one credible source.",
+    "photos": "Upload Photos",
+    "livingConsentCheck": "I confirm that this living scholar has granted explicit consent, and the venue is strictly a public space (never a private home).",
+    "submitPending": "Submit Entry for Review",
+    "successMessage": "Your contribution has been received with peace. It is in the moderation queue for source verification."
+  },
+  "admin": {
+    "title": "Moderation Review Queue",
+    "subtitle": "Verify sources and review pending sanctuary submissions.",
+    "approve": "Approve & Publish",
+    "reject": "Reject Submission",
+    "rejectNotesPrompt": "Please provide the reason for rejection (required):",
+    "emptyQueue": "The moderation queue is clear. All submissions have been reviewed.",
+    "pending": "Pending Verification",
+    "reviewedBy": "Reviewed by"
   }
 }

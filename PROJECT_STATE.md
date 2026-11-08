@@ -1,7 +1,7 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Step 3 complete. MapLibre GL interactive map home, responsive bottom sheet, category filtering, search, Place page with etiquette/events/citations, and Person page with living consent verification & "Request Edit or Removal" protection are fully built and tested. Ready for Step 4 review.
+- Step 4 complete. Contributor system with Supabase Auth, photo upload to Supabase Storage `place-photos`, full submission forms (Places, Gatherings, Persons, Corrections), living consent verification, and Moderator review queue with approve/reject workflow are built and tested. Ready for Step 5 review.
 
 ## Done
 - Initialized Git repository and set safe directory rules.
@@ -11,31 +11,34 @@
 - Built bare home page with bottom nav and thumb-zone actions.
 - Created `supabase/migrations/20261108000001_initial_sufi_map_schema.sql` with PostGIS, GIST spatial indexes, trilingual columns, living Sufi consent constraint (`check_living_person_consent`), extensible `metadata` fields, and strict RLS policies on all 8 tables.
 - Created `supabase/migrations/20261108000002_seed_quotes_and_sample_data.sql` with verified Quran/Hadith/Hikam quotes, badges (*Musafir*, *Misbah*, *Hadiyya*, *Rafeeq*, *Nazir*), and explicit `[SAMPLE]` data for West Malappuram.
-- Built MapLibre GL JS integration (`MapContainer.tsx`) with OpenStreetMap raster tiles, custom SVG sanctuary pins, dynamic fly-to camera animations, and `prefers-reduced-motion` compliance.
-- Built responsive thumb-zone `PlaceBottomSheet.tsx` with trilingual titles, primary Directions CTA in sanctuary green, ghost Save with localStorage persistence, and Suggest Edit action.
-- Built `MapHomeClient.tsx` coordinating live trilingual search, category filter chips (*All, Maqams, Dargahs, Zawiyas, Gatherings*), and floating `+` contribute button.
-- Built full Place Page (`/[locale]/places/[id]`) with visiting etiquette, recurring events, verified historical citations, and coordinates.
-- Built full Person Page (`/[locale]/persons/[id]`) with public presence schedule, living scholar consent badge, mandatory **"Request Edit or Removal"** button, and ethical disclaimer against private residences.
-- Built Gatherings overview page (`/[locale]/gatherings`).
-- Verified production build and static page generation (`npm run build`).
+- Created `supabase/migrations/20261108000003_storage_bucket_and_policies.sql` establishing the `place-photos` Supabase Storage bucket with 5MB upload limit, public read, authenticated insert, and moderator delete policies.
+- Built MapLibre GL JS map home (`MapContainer.tsx`, `MapHomeClient.tsx`), responsive thumb-zone `PlaceBottomSheet.tsx`, Place detail page (`/places/[id]`), Person page (`/persons/[id]`), and Gatherings list (`/gatherings`).
+- Built Supabase Auth modal and Profile screen (`AuthDialog.tsx`, `/me`) supporting contributor signup, sign-in, session detection, and badge progress preview.
+- Built photo uploader (`PhotoUploader.tsx`) with image validation, local preview fallback, and Supabase Storage integration.
+- Built multi-tab contributor submission portal (`ContributeForm.tsx`, `/contribute`) with mandatory attribution validation, living Sufi consent verification, and pending status assignment.
+- Built moderation review queue (`ModerationQueue.tsx`, `/admin`) allowing moderators to verify sources, approve submissions into public visibility, or reject with mandatory explanatory notes.
+- Verified production build and static page generation across all routes (`npm run build`).
 
 ## In Progress
-- Awaiting user review of Step 3 before proceeding to Step 4.
+- Awaiting user review of Step 4 before proceeding to Step 5.
 
 ## Next Up
-- **Step 4**: Supabase Auth signup/login, contributor submission flows (add place, gathering, person, upload photos, suggest correction), and moderator/admin review queue.
+- **Step 5**: Badges system (Musafir, Misbah, Hadiyya, Rafeeq, Nazir), contributor portal enhancement, rotating quotations on inviting with wisdom and kindness, and admin quote management.
 
 ## Decisions
 - **2026-11-08**: Standardized on Next.js 14 App Router with `next-intl` localized route grouping `[locale]` for English, Malayalam, and Arabic with RTL layout support.
 - **2026-11-08**: Configured "Sahn" aesthetic: `#FAF9F4` canvas, `#FFFFFF` cards, `#1F5C3A` primary green, `#E4E2D8` borders, and 14px (`0.875rem`) border-radius for cards, dialogs, and interactive buttons.
-- **2026-11-08**: Dynamic client-side import with `ssr: false` for MapLibre GL JS to prevent server-side DOM reference errors while maintaining SSR benefits for all surrounding sanctuary metadata.
-- **2026-11-08**: Ethical living person privacy enforcement: rendered a prominent red-accented "Request Edit or Removal" button on living persons and explicitly banned private home addresses in all public presence listings.
-- **2026-11-08**: Local storage caching for user bookmarks to allow instantaneous place saving on mobile outdoor connections prior to Supabase Auth login.
+- **2026-11-08**: Form-level validation of mandatory attribution: blocked form submission unless at least one verified historical citation or elder name is provided.
+- **2026-11-08**: Rejection notes mandate: required explanatory review notes when rejecting a community submission to maintain transparency and hospitality.
+- **2026-11-08**: Client-side resilient storage fallback: enabled offline object URL preview for uploaded images when Supabase Storage credentials are not yet configured in local development.
 
 ## Open Questions
 - Specific tile provider choice between OpenStreetMap standard raster tiles vs free Protomaps/Carto CDN tiles for MapLibre GL in Phase 1 — currently functioning cleanly with OpenStreetMap tiles.
 
 ## Changelog
+- **2026-11-08**: Completed Step 4. Supabase Auth signup/signin dialog, Me / Profile page, Supabase Storage `place-photos` bucket migration, photo uploader component, multi-tab contribution forms with mandatory attribution & living consent checks, and moderator review queue with approve/reject workflow.
+  - *Files touched*: `supabase/migrations/20261108000003_storage_bucket_and_policies.sql`, `src/components/auth/AuthDialog.tsx`, `src/components/contribute/PhotoUploader.tsx`, `src/components/contribute/ContributeForm.tsx`, `src/components/admin/ModerationQueue.tsx`, `src/app/[locale]/contribute/page.tsx`, `src/app/[locale]/admin/page.tsx`, `src/app/[locale]/me/page.tsx`, `src/components/ui/textarea.tsx`, `src/components/ui/label.tsx`, `messages/en.json`, `messages/ml.json`, `messages/ar.json`, `PROJECT_STATE.md`.
+  - *Next*: Step 5 — Badges, the contributor page, and the quotes.
 - **2026-11-08**: Completed Step 3. Built MapLibre GL map home, sanctuary pin markers, responsive bottom sheet, Place detail page, Person page with living consent verification & removal request action, and Gatherings listing.
   - *Files touched*: `src/components/map/MapContainer.tsx`, `src/components/sheet/PlaceBottomSheet.tsx`, `src/components/map/MapHomeClient.tsx`, `src/app/[locale]/page.tsx`, `src/app/[locale]/places/[id]/page.tsx`, `src/app/[locale]/persons/[id]/page.tsx`, `src/app/[locale]/gatherings/page.tsx`, `messages/en.json`, `messages/ml.json`, `messages/ar.json`, `PROJECT_STATE.md`.
   - *Next*: Step 4 — Auth, contribute flows, photo upload, and the moderation queue.
