@@ -1,11 +1,27 @@
 import { getTranslations } from "next-intl/server";
-import { ModerationQueue } from "@/components/admin/ModerationQueue";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { BottomNav } from "@/components/navigation/BottomNav";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
+import { SAMPLE_QUOTES } from "@/lib/sample-data";
+import { createClient } from "@/lib/supabase/server";
 import { ShieldCheck } from "lucide-react";
 
 export default async function AdminPage() {
   const t = await getTranslations("admin");
+
+  let quotes = SAMPLE_QUOTES;
+  try {
+    if (
+      process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ) {
+      const supabase = createClient();
+      const { data } = await supabase.from("quotes").select("*");
+      if (data && data.length > 0) quotes = data as any;
+    }
+  } catch {
+    // Fallback
+  }
 
   return (
     <div className="min-h-screen bg-sahn-bg pb-24">
@@ -30,7 +46,7 @@ export default async function AdminPage() {
       </header>
 
       <main className="max-w-md mx-auto px-4 pt-4 flex flex-col gap-4">
-        <ModerationQueue />
+        <AdminDashboard initialQuotes={quotes} />
       </main>
 
       <BottomNav />

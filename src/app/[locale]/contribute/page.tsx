@@ -1,10 +1,12 @@
 import { getTranslations } from "next-intl/server";
 import { ContributeForm } from "@/components/contribute/ContributeForm";
+import { RotatingQuote } from "@/components/contribute/RotatingQuote";
+import { BadgeProgressCard } from "@/components/badges/BadgeProgressCard";
 import { BottomNav } from "@/components/navigation/BottomNav";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
 import { SAMPLE_QUOTES } from "@/lib/sample-data";
 import { createClient } from "@/lib/supabase/server";
-import { PlusCircle, Sparkles, Quote as QuoteIcon } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 
 export default async function ContributePage({
   params: { locale },
@@ -31,9 +33,6 @@ export default async function ContributePage({
   } catch {
     // Fallback
   }
-
-  // Display first quote or random
-  const featuredQuote = quotes[0] || SAMPLE_QUOTES[0];
 
   const initialType = (searchParams.action === "removal_request"
     ? "removal_request"
@@ -63,22 +62,18 @@ export default async function ContributePage({
       </header>
 
       <main className="max-w-md mx-auto px-4 pt-4 flex flex-col gap-4">
-        {/* Sanctuary Wisdom Quote Banner */}
-        <div className="bg-white rounded-[14px] border border-border p-4 shadow-sm relative overflow-hidden">
-          <QuoteIcon className="absolute -bottom-2 -right-2 w-16 h-16 text-primary/5 pointer-events-none" />
-          <p
-            className="font-arabic text-base text-foreground leading-relaxed text-center"
-            dir="rtl"
-          >
-            {featuredQuote.arabic}
-          </p>
-          <p className="font-serif text-xs text-muted-foreground text-center mt-2 italic">
-            "{featuredQuote.english}"
-          </p>
-          <span className="block text-[10px] text-primary font-mono text-center mt-1">
-            — {featuredQuote.source}
-          </span>
-        </div>
+        {/* Rotating Wisdom & Kindness Quotation Card */}
+        <RotatingQuote quotes={quotes} />
+
+        {/* Badges of Stewardship Progress Card */}
+        <BadgeProgressCard
+          stats={{
+            approvedEntriesCount: 1,
+            sourcedEntriesCount: 1,
+            verifiedOthersCount: 0,
+            isNazir: false,
+          }}
+        />
 
         {/* Contribution Submission Tabs Form */}
         <ContributeForm initialType={initialType} targetId={targetId} />

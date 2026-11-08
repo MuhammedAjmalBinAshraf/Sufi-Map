@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { AuthDialog } from "@/components/auth/AuthDialog";
+import { BadgeProgressCard } from "@/components/badges/BadgeProgressCard";
 import { BottomNav } from "@/components/navigation/BottomNav";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
 import { Button } from "@/components/ui/button";
@@ -14,11 +15,10 @@ import {
   User,
   ShieldCheck,
   Compass,
-  Award,
   LogOut,
   LogIn,
-  Sparkles,
   ChevronRight,
+  Plus,
 } from "lucide-react";
 
 export default function MePage() {
@@ -105,30 +105,35 @@ export default function MePage() {
                 </Badge>
               </div>
 
-              {/* Moderator / Admin Access Link */}
-              <Link
-                href="/admin"
-                className="mt-2 p-3 rounded-xl bg-sahn-bg border border-border/80 flex items-center justify-between hover:bg-white hover:border-primary/40 transition-colors"
-              >
-                <div className="flex items-center gap-2.5">
-                  <ShieldCheck className="w-4 h-4 text-primary" />
-                  <div>
-                    <span className="text-xs font-semibold text-foreground block">
-                      Moderation Queue
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">
-                      Review pending entries & historical sources
-                    </span>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground rtl:rotate-180" />
-              </Link>
+              {/* Action buttons */}
+              <div className="grid grid-cols-2 gap-2 mt-1">
+                <Link href="/contribute">
+                  <Button
+                    size="sm"
+                    className="w-full h-9 rounded-[10px] bg-primary text-primary-foreground text-xs flex items-center justify-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Contribute</span>
+                  </Button>
+                </Link>
+
+                <Link href="/admin">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full h-9 rounded-[10px] border-border text-foreground text-xs flex items-center justify-center gap-1.5"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                    <span>Moderation</span>
+                  </Button>
+                </Link>
+              </div>
 
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={handleSignOut}
-                className="mt-2 h-9 text-xs rounded-[10px] border-border text-muted-foreground hover:text-destructive flex items-center justify-center gap-1.5"
+                className="mt-1 h-8 text-xs text-muted-foreground hover:text-destructive flex items-center justify-center gap-1.5"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>{t("signOut")}</span>
@@ -159,58 +164,15 @@ export default function MePage() {
           </Card>
         )}
 
-        {/* Badges Progress Preview Card */}
-        <Card className="rounded-[14px] border-border bg-white shadow-sm p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Award className="w-4 h-4 text-primary" />
-              <h3 className="font-serif text-sm font-semibold text-foreground">
-                Badges of Stewardship
-              </h3>
-            </div>
-            <span className="text-[10px] text-muted-foreground font-mono">
-              Verified Entries Only
-            </span>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <div className="p-2.5 rounded-xl bg-sahn-bg border border-border flex flex-col items-center text-center gap-1">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-serif font-bold">
-                M
-              </div>
-              <span className="text-[11px] font-semibold text-foreground">
-                Musafir
-              </span>
-              <span className="text-[9px] text-muted-foreground">
-                1 approved entry
-              </span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-sahn-bg border border-border flex flex-col items-center text-center gap-1">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-serif font-bold">
-                L
-              </div>
-              <span className="text-[11px] font-semibold text-foreground">
-                Misbah
-              </span>
-              <span className="text-[9px] text-muted-foreground">
-                5 sourced entries
-              </span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-sahn-bg border border-border flex flex-col items-center text-center gap-1">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-serif font-bold">
-                H
-              </div>
-              <span className="text-[11px] font-semibold text-foreground">
-                Hadiyya
-              </span>
-              <span className="text-[9px] text-muted-foreground">
-                10 sourced entries
-              </span>
-            </div>
-          </div>
-        </Card>
+        {/* Badges of Stewardship Progress Card */}
+        <BadgeProgressCard
+          stats={{
+            approvedEntriesCount: user ? 1 : 0,
+            sourcedEntriesCount: user ? 1 : 0,
+            verifiedOthersCount: 0,
+            isNazir: false,
+          }}
+        />
       </main>
 
       <AuthDialog
