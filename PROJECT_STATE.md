@@ -1,9 +1,9 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Complete Lovable sanctuary experience ported to Next.js production app.
-- Production live and verified at https://sufi-map.vercel.app (deployment dpl_86q3inVqGTEMAv2KgybXtipmKXFp).
-- In-sidebar SiteDetail, collapsible sidebar, floating sacred quote banner over map, BadgesSheet drawer, and parchment badges live.
+- Lovable chat requests (draggable 3-state bottom sheet, mobile font scale, quote fade on map explore) fully synced and deployed.
+- Production live at https://sufi-map.vercel.app (deployment dpl_Cw3rQ5pcQgmy6DXFVJWLM1Cn3DBH).
+- 100% feature and design parity with Lovable sandbox.
 - Working tree clean, synced to GitHub master.
 
 ## Done
@@ -64,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 23:43**: Integrated user direct chat edits from Lovable sandbox. Added 3-state draggable bottom sheet (`peek` 64px, `half` 42dvh, `full` 82dvh) with gesture flick physics (`sheet.ts`, `MobileSheet.tsx`); added quote banner auto-fade during map panning/zooming with 5s idle return timer; and applied mobile font scale 93.75% (<768px) with 16px input threshold. Pushed `12480ac` to GitHub and promoted to Vercel production.
+  - *Files touched*: `src/lib/sheet.ts`, `src/components/sufi/MobileSheet.tsx`, `src/components/map/MapContainer.tsx`, `src/components/map/MapHomeClient.tsx`, `src/app/globals.css`, `PROJECT_STATE.md`.
+  - *Next*: All Lovable chat edits live in production.
 - **2026-11-09 23:31**: Full UI parity with Lovable sanctuary experience deployed to Vercel production. Built in-sidebar `SiteDetail` with back navigation, schedule pills, OSM directions, save toggling, and correction dialog; built `BadgesSheet` slide-out drawer with Arabic badges; added sidebar collapse/expand controls; added floating `RotatingQuote` banner centered over map canvas; added segmented `LocaleSwitcher` toggle; and added `parchment` badge variant. Verified production build and aliased to `sufi-map.vercel.app`.
   - *Files touched*: `src/app/[locale]/page.tsx`, `src/components/map/MapHomeClient.tsx`, `src/components/sufi/SiteDetail.tsx`, `src/components/sufi/BadgesSheet.tsx`, `src/components/common/LocaleSwitcher.tsx`, `src/components/ui/badge.tsx`, `PROJECT_STATE.md`.
   - *Next*: Test live on desktop and mobile viewports.
