@@ -1,10 +1,10 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Phase 1 with Responsive Desktop Web Design and In-App Map Setup & Settings is complete and verified.
-- Resolved MapLibre canvas visibility with absolute positioning, `ResizeObserver`, CartoDB Voyager warm basemap, and layer switcher.
-- Split-screen desktop layout (420px docked sanctuary sidebar + full-bleed map), top `DesktopHeader`, floating `MapControls`, and contributor `CoordinatePickerModal` fully operational.
-- Verified production build (`npm run build`) passing with zero errors across all routes.
+- Deployed to Vercel at https://sufi-map.vercel.app with all production environment variables set.
+- Supabase MCP configured and connected to project `lykrakuypnfbnjzfhwhj`.
+- All database migrations (PostGIS schema, RLS policies, seed quotes/sample data, storage bucket) applied and verified in Supabase.
+- Full Phase 1 features operational across Web, Database, and Storage layers.
 
 ## Done
 - Initialized Git repository and set safe directory rules.
@@ -32,13 +32,17 @@
 - Created `CoordinatePickerModal.tsx` draggable map pin coordinate picker and integrated "Pick on Map" button directly into `ContributeForm.tsx`.
 - Updated Place (`/places/[id]`), Person (`/persons/[id]`), Gatherings (`/gatherings`), Contribute (`/contribute`), Me (`/me`), and Admin (`/admin`) pages to responsive two-column desktop layouts.
 - Verified production build and static page generation across all routes (`npm run build`).
+- Deployed Next.js project to Vercel (`sufi-map.vercel.app`) with custom production aliases.
+- Configured Vercel production environment variables for Supabase (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_MAP_API_KEY`).
+- Configured Supabase Model Context Protocol (MCP) server scoped to project `lykrakuypnfbnjzfhwhj` using Personal Access Token.
+- Executed full database migration (Schema, Badges/Quotes/Sample Data, Storage Bucket & RLS) directly via Supabase MCP.
 
 ## In Progress
-- Live manual testing and user review at `http://localhost:3000`.
+- Verification of live database records across the production app.
 
 ## Next Up
-- Gather user feedback on the desktop layout and map controls.
-- Connect production Supabase project keys in `.env.local` when ready.
+- Configure Supabase Auth redirect URLs in Supabase Dashboard (add `https://sufi-map.vercel.app/**`).
+- Collect feedback on live Vercel deployment.
 
 ## Decisions
 - **2026-11-08**: Standardized on Next.js 14 App Router with `next-intl` localized route grouping `[locale]` for English, Malayalam, and Arabic with RTL layout support.
@@ -52,11 +56,21 @@
 - **2026-11-09**: CartoDB Voyager default basemap: replaced plain OSM raster tiles with CartoDB Voyager tiles to guarantee CORS reliability across browsers and harmonize with the Sahn warm stone palette.
 - **2026-11-09**: Split-screen desktop architecture: docked 420px left sidebar for listings and search, giving the interactive map maximum canvas space while retaining mobile bottom sheet on small screens.
 - **2026-11-09**: Modal coordinate picker for contributors: enabled visual map coordinate selection with draggable marker to ensure accurate latitude/longitude entry without manual geo-lookup.
+- **2026-11-09**: Configured Supabase MCP integration using user PAT scoped to project `lykrakuypnfbnjzfhwhj` for programmatic DDL, RLS, and data management.
 
 ## Open Questions
-- None for Phase 1. Database schema, UI, and desktop map controls are ready.
+- None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 20:25**: Applied full Supabase migration via Supabase MCP server (`apply_migration`): PostGIS extensions, tables (`profiles`, `places`, `persons`, `gatherings`, `corrections`, `quotes`, `badges`, `user_badges`), comprehensive RLS policies, seed quotes and sample places/persons/gatherings, and `place-photos` storage bucket with access policies. Verified database counts and storage configuration.
+  - *Files touched*: `PROJECT_STATE.md`.
+  - *Next*: Test auth workflows and live app integration.
+- **2026-11-09**: Added environment variable configuration for custom map providers (`NEXT_PUBLIC_MAP_API_KEY` and `NEXT_PUBLIC_MAP_STYLE_URL`) in `MapContainer.tsx`, `.env.example`, and created `.env.local` for local secrets.
+  - *Files touched*: `.env.example`, `src/components/map/MapContainer.tsx`, `PROJECT_STATE.md`.
+  - *Next*: Connect provider tile/style URL once confirmed by user.
+- **2026-11-09**: Completed Web Design & Map Setup. Built responsive desktop split-screen layout, desktop header navbar, floating map controls with basemap switcher, geolocation, region presets, and coordinate picker modal integrated into contribute form. Fixed map visibility with ResizeObserver and CartoDB Voyager warm basemap. Polished Place, Person, Gatherings, Contribute, Me, and Admin pages for desktop viewports.
+  - *Files touched*: `src/app/globals.css`, `src/components/navigation/DesktopHeader.tsx`, `src/components/map/MapControls.tsx`, `src/components/map/CoordinatePickerModal.tsx`, `src/components/map/MapContainer.tsx`, `src/components/map/MapHomeClient.tsx`, `src/components/contribute/ContributeForm.tsx`, `src/app/[locale]/layout.tsx`, `src/app/[locale]/places/[id]/page.tsx`, `src/app/[locale]/persons/[id]/page.tsx`, `src/app/[locale]/gatherings/page.tsx`, `src/app/[locale]/contribute/page.tsx`, `src/app/[locale]/me/page.tsx`, `src/app/[locale]/admin/page.tsx`, `src/components/navigation/BottomNav.tsx`, `PROJECT_STATE.md`.
+  - *Next*: Live verification and user feedback.
 - **2026-11-09**: Added environment variable configuration for custom map providers (`NEXT_PUBLIC_MAP_API_KEY` and `NEXT_PUBLIC_MAP_STYLE_URL`) in `MapContainer.tsx`, `.env.example`, and created `.env.local` for local secrets.
   - *Files touched*: `.env.example`, `src/components/map/MapContainer.tsx`, `PROJECT_STATE.md`.
   - *Next*: Connect provider tile/style URL once confirmed by user.
