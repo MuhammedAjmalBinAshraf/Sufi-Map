@@ -11,9 +11,11 @@ interface SanctuaryMapProps {
   sites: Site[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  /** Fires when the visitor starts / stops moving the map themselves (not on programmatic eases). */
+  onExploreChange?: (exploring: boolean) => void;
 }
 
-export function SanctuaryMap({ sites, selectedId, onSelect }: SanctuaryMapProps) {
+export function SanctuaryMap({ sites, selectedId, onSelect, onExploreChange }: SanctuaryMapProps) {
   const { status, ml } = useMapLibre();
   const { t, pick } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,6 +23,8 @@ export function SanctuaryMap({ sites, selectedId, onSelect }: SanctuaryMapProps)
   const markersRef = useRef(new Map<string, Marker>());
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
+  const onExploreRef = useRef(onExploreChange);
+  onExploreRef.current = onExploreChange;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -36,6 +40,18 @@ export function SanctuaryMap({ sites, selectedId, onSelect }: SanctuaryMapProps)
     map.addControl(new ml.NavigationControl({ showCompass: false }), "bottom-right");
     map.setPadding(overlayPadding());
     mapRef.current = map;
+    // Only gestures carry an originalEvent; a user move ends on the next moveend (inertia included).
+    let exploring = false;
+    map.on("movestart", (e) => {
+      if (!e.originalEvent || exploring) return;
+      exploring = true;
+      onExploreRef.current?.(true);
+    });
+    map.on("moveend", () => {
+      if (!exploring) return;
+      exploring = false;
+      onExploreRef.current?.(false);
+    });
     const stopObserving = observeResize(map, container, () => map.setPadding(overlayPadding()));
     const markers = markersRef.current;
     return () => {
