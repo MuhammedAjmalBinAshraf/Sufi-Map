@@ -65,6 +65,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 23:56**: Created and pushed dedicated `lovable` branch to GitHub remote (`origin/lovable`) containing all Lovable changes, and documented direct Lovable GitHub connector setup for automated continuous sync.
+  - *Files touched*: `PROJECT_STATE.md`.
+  - *Next*: Connect Lovable GitHub connector on Lovable dashboard if automatic commit-on-chat is desired.
 - **2026-11-09 23:48**: Codified mandatory Lovable → GitHub → Vercel deployment pipeline in `AGENTS.md` and `PROJECT_STATE.md`. All future experiments and direct chat changes in Lovable will be committed to `origin/master` so GitHub automates Vercel production deployments.
   - *Files touched*: `AGENTS.md`, `PROJECT_STATE.md`.
   - *Next*: Continue feature development adhering strictly to this pipeline.
