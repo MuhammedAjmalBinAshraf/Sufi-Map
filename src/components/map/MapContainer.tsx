@@ -24,6 +24,7 @@ interface MapContainerProps {
   onMapClick?: (coords: [number, number]) => void;
   interactivePinPlacement?: boolean;
   className?: string;
+  onExploreChange?: (exploring: boolean) => void;
 }
 
 const TILE_URLS: Record<BasemapStyle, string> = {
@@ -174,6 +175,7 @@ const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function 
     onMapClick,
     interactivePinPlacement = false,
     className = "",
+    onExploreChange,
   },
   ref
 ) {
@@ -249,6 +251,18 @@ const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function 
     // Ensure map resizes to container width/height immediately after mount
     map.on("load", () => {
       map.resize();
+    });
+
+    let exploring = false;
+    map.on("movestart", (e) => {
+      if (!e.originalEvent || exploring) return;
+      exploring = true;
+      if (onExploreChange) onExploreChange(true);
+    });
+    map.on("moveend", () => {
+      if (!exploring) return;
+      exploring = false;
+      if (onExploreChange) onExploreChange(false);
     });
 
     const resizeTimer = setTimeout(() => {

@@ -6,12 +6,13 @@ import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Database } from "@/types/database";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
-import { PlaceBottomSheet } from "@/components/sheet/PlaceBottomSheet";
 import { MapControls, BasemapStyle } from "@/components/map/MapControls";
 import { MapContainerHandle } from "@/components/map/MapContainer";
 import { SiteDetail } from "@/components/sufi/SiteDetail";
 import { BadgesSheet } from "@/components/sufi/BadgesSheet";
+import { MobileSheet } from "@/components/sufi/MobileSheet";
 import { RotatingQuote } from "@/components/contribute/RotatingQuote";
+import { SheetSnap } from "@/lib/sheet";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,26 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [badgesOpen, setBadgesOpen] = useState(false);
+  const [sheetSnap, setSheetSnap] = useState<SheetSnap>("half");
+
+  // Exploration state: quote banner steps aside while panning/zooming
+  const [exploring, setExploring] = useState(false);
+  const returnTimer = useRef<NodeJS.Timeout | undefined>(undefined);
+
+  const onExploreChange = useCallback((on: boolean) => {
+    if (returnTimer.current) clearTimeout(returnTimer.current);
+    if (on) {
+      setExploring(true);
+    } else {
+      returnTimer.current = setTimeout(() => setExploring(false), 5000);
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (returnTimer.current) clearTimeout(returnTimer.current);
+    };
+  }, []);
 
   // Map Setup States
   const [basemapStyle, setBasemapStyle] = useState<BasemapStyle>("sahn-warm");
@@ -102,6 +123,11 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
       return true;
     });
   }, [initialPlaces, selectedKind, searchQuery]);
+
+  const selectPlace = (place: Place) => {
+    setSelectedPlace(place);
+    setSheetSnap("half");
+  };
 
   // Geolocation handler
   const handleLocateUser = () => {
@@ -142,7 +168,7 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
             name: closest.name_en,
             distanceKm: minDistance,
           });
-          setSelectedPlace(closest);
+          selectPlace(closest);
         }
       },
       (err) => {
@@ -297,7 +323,7 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
                         <li key={place.id}>
                           <button
                             type="button"
-                            onClick={() => setSelectedPlace(place)}
+                            onClick={() => selectPlace(place)}
                             className="card-lift w-full text-start p-3.5 rounded-[14px] border border-border bg-card cursor-pointer transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
                             <div className="flex items-start justify-between gap-2">
@@ -360,8 +386,9 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
           ref={mapRef}
           places={filteredPlaces}
           selectedPlace={selectedPlace}
-          onSelectPlace={(place) => setSelectedPlace(place)}
+          onSelectPlace={selectPlace}
           basemapStyle={basemapStyle}
+          onExploreChange={onExploreChange}
         />
 
         {/* Desktop Expand Sidebar Floating Button (shown when sidebar is closed) */}
@@ -378,9 +405,13 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
           </Button>
         )}
 
-        {/* Desktop: Floating Quote Banner on Top of the Map */}
+        {/* Desktop: Floating Quote Banner on Top of the Map (fades out while exploring) */}
         {quotes.length > 0 && (
-          <div className="pointer-events-none absolute inset-x-0 top-5 z-20 hidden justify-center px-4 md:flex">
+          <div
+            className={`pointer-events-none absolute inset-x-0 top-5 z-20 hidden justify-center px-4 md:flex transition-all duration-300 ease-out ${
+              exploring ? "opacity-0 -translate-y-2 pointer-events-none" : "opacity-100 translate-y-0"
+            }`}
+          >
             <div className="pointer-events-auto w-full max-w-xl">
               <RotatingQuote quotes={quotes} className="shadow-float" />
             </div>
@@ -402,7 +433,7 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
 
         {/* Mobile: Floating App Bar & Quote Banner */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 space-y-2 p-3 md:hidden">
-          <div className="pointer-events-auto flex items-center justify-between gap-2 rounded-[14px] border border-border bg-card/95 p-2.5 ps-3 shadow-float backdrop-blur-md">
+          <div className="pointer-events-auto flex items-center justify-between gap-2 rounded-[14px] border border-border bg-card/95 p-2 ps-3 shadow-float backdrop-blur-md">
             <div className="flex items-center gap-2">
               <span
                 className="flex size-8 items-center justify-center rounded-[12px] bg-primary text-primary-foreground shadow-xs"
@@ -435,20 +466,119 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
           </div>
 
           {quotes.length > 0 && (
-            <div className="pointer-events-auto">
+            <div
+              className={`pointer-events-auto transition-all duration-300 ease-out ${
+                exploring ? "opacity-0 -translate-y-2 pointer-events-none" : "opacity-100 translate-y-0"
+              }`}
+            >
               <RotatingQuote quotes={quotes} className="shadow-float text-xs" />
             </div>
           )}
         </div>
       </main>
 
-      {/* ─── 3. Mobile Bottom Sheet ─── */}
-      <div className="md:hidden">
-        <PlaceBottomSheet
-          place={selectedPlace}
-          onClose={() => setSelectedPlace(null)}
-        />
-      </div>
+      {/* ─── 3. Mobile Draggable Bottom Sheet (peek / half / full) ─── */}
+      <MobileSheet
+        snap={sheetSnap}
+        onSnapChange={setSheetSnap}
+        peekLabel={
+          selectedPlace
+            ? (locale === "ml"
+                ? selectedPlace.name_ml
+                : locale === "ar"
+                ? selectedPlace.name_ar
+                : selectedPlace.name_en)
+            : `${filteredPlaces.length} sanctuaries · swipe up for list`
+        }
+        header={
+          !selectedPlace ? (
+            <div className="space-y-2">
+              <div className="relative">
+                <Search className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" aria-hidden />
+                <Input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t("common.searchPlaceholder")}
+                  className="h-10 bg-card ps-9 text-[16px] md:text-xs rounded-[12px] border-border shadow-2xs"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                {filterChips.map((chip) => {
+                  const isActive = selectedKind === chip.id;
+                  return (
+                    <Badge
+                      key={chip.id}
+                      onClick={() => setSelectedKind(chip.id)}
+                      variant={isActive ? "default" : "outline"}
+                      className={`cursor-pointer whitespace-nowrap px-3 py-1 text-[11px] font-medium rounded-full ${
+                        isActive
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-card text-muted-foreground border-border"
+                      }`}
+                    >
+                      {chip.label}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          ) : undefined
+        }
+      >
+        {selectedPlace ? (
+          <SiteDetail
+            place={selectedPlace}
+            onBack={() => setSelectedPlace(null)}
+            locale={locale}
+          />
+        ) : (
+          <ul className="space-y-2.5">
+            {filteredPlaces.map((place) => {
+              const primaryName =
+                locale === "ml"
+                  ? place.name_ml
+                  : locale === "ar"
+                  ? place.name_ar
+                  : place.name_en;
+
+              return (
+                <li key={place.id}>
+                  <button
+                    type="button"
+                    onClick={() => selectPlace(place)}
+                    className="card-lift w-full text-start p-3 rounded-[14px] border border-border bg-card cursor-pointer"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <Badge
+                            variant="parchment"
+                            className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0 h-4 rounded-full"
+                          >
+                            {place.kind}
+                          </Badge>
+                          <span className="text-[11px] text-muted-foreground">
+                            {place.area}
+                          </span>
+                        </div>
+                        <h3 className="font-serif text-base font-semibold text-foreground leading-snug">
+                          {primaryName}
+                        </h3>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground rtl:rotate-180" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
+                      {place.short_history_en}
+                    </p>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </MobileSheet>
 
       {/* ─── 4. Badges Slide-Out Sheet ─── */}
       <BadgesSheet
