@@ -31,6 +31,3 @@ supabase/.temp/
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
-
-# Cursor IDE — contains PAT secrets, never commit
-.cursor/mcp.json
