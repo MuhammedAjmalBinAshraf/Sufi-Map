@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { User, Session } from "@supabase/supabase-js";
-import { supabase } from "./supabase";
+import { getSupabase } from "./supabase";
 
 interface AuthContextType {
   user: User | null;
@@ -20,7 +20,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    if (typeof window === "undefined") {
+      setLoading(false);
+      return;
+    }
+
+    const client = getSupabase();
+    client.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -28,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = client.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -38,12 +44,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const client = getSupabase();
+    const { error } = await client.auth.signInWithPassword({ email, password });
     return { error };
   };
 
   const signUpWithEmail = async (email: string, password: string, fullName?: string) => {
-    const { error } = await supabase.auth.signUp({
+    const client = getSupabase();
+    const { error } = await client.auth.signUp({
       email,
       password,
       options: {
@@ -56,7 +64,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    const client = getSupabase();
+    const { error } = await client.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
@@ -66,7 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    const client = getSupabase();
+    await client.auth.signOut();
   };
 
   return (
