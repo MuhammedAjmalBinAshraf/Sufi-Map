@@ -1,17 +1,19 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Award, MoonStar, Plus } from "lucide-react";
+import { Award, MoonStar, Plus, Settings } from "lucide-react";
 
 import { BadgesSheet } from "@/components/sufi/BadgesSheet";
 import { LanguageToggle } from "@/components/sufi/LanguageToggle";
 import { MobileSheet } from "@/components/sufi/MobileSheet";
 import { QuoteBanner } from "@/components/sufi/QuoteBanner";
 import { SanctuaryMap } from "@/components/sufi/SanctuaryMap";
+import { SettingsSheet } from "@/components/sufi/SettingsSheet";
 import { SiteDetail } from "@/components/sufi/SiteDetail";
 import { SiteFilters, SiteList } from "@/components/sufi/SiteList";
 import { SubmitDialog } from "@/components/sufi/SubmitDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { shouldShowQuote, usePreferences } from "@/lib/preferences";
 import { filterSites, SITES, type SiteKind } from "@/lib/sites";
 
 export const Route = createFileRoute("/")({
@@ -42,6 +44,22 @@ function Index() {
   const [submitOpen, setSubmitOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
   const [sheetExpanded, setSheetExpanded] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { prefs } = usePreferences();
+
+  // The quote steps aside while the visitor moves the map, and returns after a quiet pause.
+  const [exploring, setExploring] = useState(false);
+  const returnTimer = useRef<number | undefined>(undefined);
+  const onExploreChange = useCallback(
+    (on: boolean) => {
+      window.clearTimeout(returnTimer.current);
+      if (on) setExploring(true);
+      else returnTimer.current = window.setTimeout(() => setExploring(false), prefs.quoteReturnSeconds * 1000);
+    },
+    [prefs.quoteReturnSeconds],
+  );
+  useEffect(() => () => window.clearTimeout(returnTimer.current), []);
+  const quoteVisible = shouldShowQuote(prefs.quoteMode, exploring);
 
   const sites = useMemo(() => filterSites(SITES, query, kind), [query, kind]);
   const selected = SITES.find((s) => s.id === selectedId) ?? null;
@@ -53,6 +71,9 @@ function Index() {
 
   const actions = (
     <div className="flex items-center gap-2">
+      <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)} aria-label={t("settings")}>
+        <Settings aria-hidden />
+      </Button>
       <Button variant="outline" size="icon" onClick={() => setBadgesOpen(true)} aria-label={t("badges")}>
         <Award aria-hidden />
       </Button>
@@ -90,14 +111,16 @@ function Index() {
 
       {/* Map */}
       <main className="relative min-w-0 flex-1">
-        <SanctuaryMap sites={sites} selectedId={selectedId} onSelect={select} />
+        <SanctuaryMap sites={sites} selectedId={selectedId} onSelect={select} onExploreChange={onExploreChange} />
 
         {/* Mobile: floating header */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 space-y-2 p-3 md:hidden">
           <div className="pointer-events-auto flex items-center justify-between gap-2 rounded-[14px] border bg-card/95 p-2 ps-3 shadow-float backdrop-blur">
             <Brand compact />
             <div className="flex items-center gap-1.5">
-              <LanguageToggle />
+              <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)} aria-label={t("settings")}>
+                <Settings aria-hidden />
+              </Button>
               <Button variant="outline" size="icon" onClick={() => setBadgesOpen(true)} aria-label={t("badges")}>
                 <Award aria-hidden />
               </Button>
@@ -106,12 +129,12 @@ function Index() {
               </Button>
             </div>
           </div>
-          <QuoteBanner className="pointer-events-auto" />
+          <QuoteBanner visible={quoteVisible} />
         </div>
 
         {/* Desktop: quote over the map */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 hidden justify-center p-5 md:flex">
-          <QuoteBanner className="pointer-events-auto w-full max-w-xl" />
+          <QuoteBanner visible={quoteVisible} className="w-full max-w-xl" />
         </div>
       </main>
 
@@ -122,6 +145,7 @@ function Index() {
 
       <SubmitDialog open={submitOpen} onOpenChange={setSubmitOpen} />
       <BadgesSheet open={badgesOpen} onOpenChange={setBadgesOpen} />
+      <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 }
