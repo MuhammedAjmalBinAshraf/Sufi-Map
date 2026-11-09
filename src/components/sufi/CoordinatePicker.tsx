@@ -82,7 +82,6 @@ export function CoordinatePicker({ lat, lng, kind, onChange }: CoordinatePickerP
     );
   };
 
-  const parse = (v: string) => (v.trim() === "" || Number.isNaN(Number(v)) ? undefined : Number(v));
   const hasMap = status === "ready" || status === "loading";
 
   return (
@@ -94,35 +93,54 @@ export function CoordinatePicker({ lat, lng, kind, onChange }: CoordinatePickerP
         </div>
       )}
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <Label htmlFor="lat">{t("latitude")}</Label>
-          <Input
-            id="lat"
-            inputMode="decimal"
-            dir="ltr"
-            value={lat ?? ""}
-            onChange={(e) => onChange(parse(e.target.value), lng)}
-            placeholder="11.0457"
-            className="bg-card"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="lng">{t("longitude")}</Label>
-          <Input
-            id="lng"
-            inputMode="decimal"
-            dir="ltr"
-            value={lng ?? ""}
-            onChange={(e) => onChange(lat, parse(e.target.value))}
-            placeholder="75.9262"
-            className="bg-card"
-          />
-        </div>
+        <CoordInput id="lat" label={t("latitude")} value={lat} placeholder="11.0457" onChange={(v) => onChange(v, lng)} />
+        <CoordInput id="lng" label={t("longitude")} value={lng} placeholder="75.9262" onChange={(v) => onChange(lat, v)} />
       </div>
       <Button type="button" variant="outline" size="sm" onClick={locate} disabled={locating}>
         <LocateFixed aria-hidden />
         {locating ? t("locating") : t("useMyLocation")}
       </Button>
+    </div>
+  );
+}
+
+/** Keeps the typed text (e.g. "11.") while reporting a parsed number upward. */
+function CoordInput({
+  id,
+  label,
+  value,
+  placeholder,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: number | undefined;
+  placeholder: string;
+  onChange: (v: number | undefined) => void;
+}) {
+  const [text, setText] = useState(value === undefined ? "" : String(value));
+
+  useEffect(() => {
+    setText((current) => (Number(current) === value && current !== "" ? current : value === undefined ? "" : String(value)));
+  }, [value]);
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        inputMode="decimal"
+        dir="ltr"
+        value={text}
+        onChange={(e) => {
+          const next = e.target.value;
+          setText(next);
+          const n = Number(next);
+          onChange(next.trim() === "" || Number.isNaN(n) ? undefined : n);
+        }}
+        placeholder={placeholder}
+        className="bg-card"
+      />
     </div>
   );
 }
