@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { MapPin, Check, Crosshair } from "lucide-react";
-import { getEffectiveTileUrl } from "./MapContainer";
+import { getMapStyle } from "./MapContainer";
 
 interface CoordinatePickerModalProps {
   open: boolean;
@@ -50,28 +50,10 @@ export function CoordinatePickerModal({
 
       const map = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: {
-          version: 8,
-          sources: {
-            "picker-osm": {
-              type: "raster",
-              tiles: [getEffectiveTileUrl("sahn-warm")],
-              tileSize: 256,
-              attribution: "&copy; OpenStreetMap & CartoDB",
-            },
-          },
-          layers: [
-            {
-              id: "picker-layer",
-              type: "raster",
-              source: "picker-osm",
-              minzoom: 0,
-              maxzoom: 19,
-            },
-          ],
-        },
+        style: getMapStyle("sahn-warm"),
         center: [initialLng, initialLat],
         zoom: 12,
+        maxZoom: 19,
         attributionControl: false,
       });
 

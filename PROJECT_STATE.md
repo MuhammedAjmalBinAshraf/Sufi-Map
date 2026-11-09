@@ -64,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 21:33**: Fixed zoom limit issue where map displayed "map data not available" and turned blank green. Upgraded Carto basemap to load official MapLibre vector style (`https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?key=...`) and enforced `maxZoom: 19` / source `maxzoom` bounds with automatic overzooming across raster styles and modal coordinate picker.
+  - *Files touched*: `src/components/map/MapContainer.tsx`, `src/components/map/CoordinatePickerModal.tsx`, `PROJECT_STATE.md`.
+  - *Next*: Verify continuous zoom in live production site.
 - **2026-11-09 21:18**: Integrated Carto map API key (`NEXT_PUBLIC_MAP_API_KEY`) into `MapContainer` and `CoordinatePickerModal` with dynamic `getEffectiveTileUrl` helper, supporting authenticated Carto tiles and custom style URLs. Verified local production build and pushed to GitHub for automated Vercel deployment.
   - *Files touched*: `src/components/map/MapContainer.tsx`, `src/components/map/CoordinatePickerModal.tsx`, `PROJECT_STATE.md`.
   - *Next*: Test authenticated map tile performance in production.

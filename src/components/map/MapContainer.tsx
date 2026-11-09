@@ -46,11 +46,123 @@ export function getEffectiveTileUrl(style: BasemapStyle): string {
   if (apiKey && style === "sahn-warm") {
     if (url.includes("{key}")) {
       url = url.replace("{key}", apiKey);
-    } else if (url.includes("cartocdn.com") && !url.includes("api_key=")) {
-      url = `${url}?api_key=${apiKey}`;
+    } else if (url.includes("cartocdn.com") && !url.includes("key=")) {
+      url = `${url}?key=${apiKey}`;
     }
   }
   return url;
+}
+
+export function getMapStyle(style: BasemapStyle): string | maplibregl.StyleSpecification {
+  const apiKey = process.env.NEXT_PUBLIC_MAP_API_KEY;
+  const customStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL;
+
+  if (style === "sahn-warm") {
+    if (customStyleUrl) {
+      return apiKey && customStyleUrl.includes("{key}")
+        ? customStyleUrl.replace("{key}", apiKey)
+        : customStyleUrl;
+    }
+    // High-resolution vector style with Carto API key
+    if (apiKey) {
+      return `https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?key=${apiKey}`;
+    }
+    // Fallback Carto raster tiles with maxzoom constraint
+    return {
+      version: 8,
+      sources: {
+        "sufi-basemap": {
+          type: "raster",
+          tiles: ["https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"],
+          tileSize: 256,
+          maxzoom: 19,
+          attribution: "&copy; OpenStreetMap & CartoDB",
+        },
+      },
+      layers: [
+        {
+          id: "sufi-basemap-layer",
+          type: "raster",
+          source: "sufi-basemap",
+          minzoom: 0,
+          maxzoom: 19,
+        },
+      ],
+    };
+  }
+
+  if (style === "osm-standard") {
+    return {
+      version: 8,
+      sources: {
+        "sufi-basemap": {
+          type: "raster",
+          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tileSize: 256,
+          maxzoom: 19,
+          attribution: "&copy; OpenStreetMap contributors",
+        },
+      },
+      layers: [
+        {
+          id: "sufi-basemap-layer",
+          type: "raster",
+          source: "sufi-basemap",
+          minzoom: 0,
+          maxzoom: 19,
+        },
+      ],
+    };
+  }
+
+  if (style === "satellite") {
+    return {
+      version: 8,
+      sources: {
+        "sufi-basemap": {
+          type: "raster",
+          tiles: [
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          ],
+          tileSize: 256,
+          maxzoom: 19,
+          attribution: "&copy; Esri & Maxar",
+        },
+      },
+      layers: [
+        {
+          id: "sufi-basemap-layer",
+          type: "raster",
+          source: "sufi-basemap",
+          minzoom: 0,
+          maxzoom: 19,
+        },
+      ],
+    };
+  }
+
+  // terrain (OpenTopoMap max native zoom is 17)
+  return {
+    version: 8,
+    sources: {
+      "sufi-basemap": {
+        type: "raster",
+        tiles: ["https://tile.opentopomap.org/{z}/{x}/{y}.png"],
+        tileSize: 256,
+        maxzoom: 17,
+        attribution: "&copy; OpenTopoMap contributors",
+      },
+    },
+    layers: [
+      {
+        id: "sufi-basemap-layer",
+        type: "raster",
+        source: "sufi-basemap",
+        minzoom: 0,
+        maxzoom: 22,
+      },
+    ],
+  };
 }
 
 const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function MapContainer(
@@ -124,39 +236,13 @@ const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function 
 
     const initialLng = selectedPlace ? selectedPlace.longitude : 75.9234;
     const initialLat = selectedPlace ? selectedPlace.latitude : 11.0489;
-    let customStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL;
-    const apiKey = process.env.NEXT_PUBLIC_MAP_API_KEY;
-    if (customStyleUrl && apiKey && customStyleUrl.includes("{key}")) {
-      customStyleUrl = customStyleUrl.replace("{key}", apiKey);
-    }
-    const tileUrl = getEffectiveTileUrl(basemapStyle);
-
-    const defaultRasterStyle: maplibregl.StyleSpecification = {
-      version: 8,
-      sources: {
-        "sufi-basemap": {
-          type: "raster",
-          tiles: [tileUrl],
-          tileSize: 256,
-          attribution: "&copy; OpenStreetMap & CartoDB",
-        },
-      },
-      layers: [
-        {
-          id: "sufi-basemap-layer",
-          type: "raster",
-          source: "sufi-basemap",
-          minzoom: 0,
-          maxzoom: 19,
-        },
-      ],
-    };
 
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
-      style: customStyleUrl || defaultRasterStyle,
+      style: getMapStyle(basemapStyle),
       center: [initialLng, initialLat],
       zoom: 11.5,
+      maxZoom: 19,
       attributionControl: false,
     });
 
@@ -192,42 +278,13 @@ const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function 
     };
   }, []);
 
-  // Update Basemap Layer when basemapStyle prop changes
+  // Update Basemap Style when basemapStyle prop changes
   useEffect(() => {
     const map = mapRef.current;
     if (!map || currentStyleRef.current === basemapStyle) return;
 
     currentStyleRef.current = basemapStyle;
-    const tileUrl = getEffectiveTileUrl(basemapStyle);
-    if (!tileUrl) return;
-
-    const source = map.getSource("sufi-basemap") as maplibregl.RasterTileSource;
-    if (source && source.setTiles) {
-      source.setTiles([tileUrl]);
-    } else {
-      // Re-create raster source and layer if dynamic tile update is not supported
-      if (map.getLayer("sufi-basemap-layer")) {
-        map.removeLayer("sufi-basemap-layer");
-      }
-      if (map.getSource("sufi-basemap")) {
-        map.removeSource("sufi-basemap");
-      }
-      map.addSource("sufi-basemap", {
-        type: "raster",
-        tiles: [tileUrl],
-        tileSize: 256,
-      });
-      map.addLayer(
-        {
-          id: "sufi-basemap-layer",
-          type: "raster",
-          source: "sufi-basemap",
-          minzoom: 0,
-          maxzoom: 19,
-        },
-        undefined
-      );
-    }
+    map.setStyle(getMapStyle(basemapStyle));
   }, [basemapStyle]);
 
   // Update Markers
