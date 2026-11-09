@@ -1,7 +1,7 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Deployed to Vercel at https://sufi-map.vercel.app with all production environment variables set.
+- Deployed to Vercel at https://sufi-map.vercel.app with all production environment variables set and continuous deployment linked to GitHub.
 - Connected and pushed to GitHub repository: https://github.com/MuhammedAjmalBinAshraf/Sufi-Map.
 - Supabase MCP configured and connected to project `lykrakuypnfbnjzfhwhj`.
 - All database migrations (PostGIS schema, RLS policies, seed quotes/sample data, storage bucket) applied and verified in Supabase.
@@ -37,6 +37,7 @@
 - Configured Vercel production environment variables for Supabase (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_MAP_API_KEY`).
 - Configured Supabase Model Context Protocol (MCP) server scoped to project `lykrakuypnfbnjzfhwhj` using Personal Access Token.
 - Executed full database migration (Schema, Badges/Quotes/Sample Data, Storage Bucket & RLS) directly via Supabase MCP.
+- Connected Vercel production deployment to GitHub repository for automated continuous deployment (CI/CD).
 
 ## In Progress
 - Verification of live database records across the production app.
@@ -63,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 21:00**: Linked Vercel project directly to GitHub repository (`MuhammedAjmalBinAshraf/Sufi-Map`) enabling automated CI/CD builds on push to `master`.
+  - *Files touched*: `PROJECT_STATE.md`.
+  - *Next*: Phase 1 production testing and community contributor validation.
 - **2026-11-09 20:43**: Connected repository to remote GitHub repository `MuhammedAjmalBinAshraf/Sufi-Map`. Cleaned `.gitignore` (ignoring `.vercel` and `supabase/.temp/`), committed full migration scripts and lockfile updates, and pushed `master` branch with sanitized remote URLs.
   - *Files touched*: `.gitignore`, `package.json`, `package-lock.json`, `supabase/sufi_map_full_migration.sql`, `PROJECT_STATE.md`.
   - *Next*: Link Vercel project to GitHub repository for automated CI/CD if desired.
