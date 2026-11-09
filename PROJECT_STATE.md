@@ -1,10 +1,10 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Design system refinements live at https://sufi-map.vercel.app (commit `7603a48`).
-- Cursor MCP configured globally at `~/.cursor/mcp.json` and project-level at `.cursor/mcp.json` (gitignored).
-- Cursor rules file at `.cursor/rules` with Sahn design system context.
-- Supabase Auth redirect URL confirmed added by user.
+- Design system refinements live at https://sufi-map.vercel.app.
+- Cursor MCP configs removed as requested.
+- StackBlitz / Bolt integration ready: repo importable at https://bolt.new/github/MuhammedAjmalBinAshraf/Sufi-Map.
+- Production stable on Vercel; all 9 routes pass build cleanly.
 
 ## Done
 - Initialized Git repository and set safe directory rules.
@@ -64,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 23:10**: Removed Cursor MCP configs (`~/.cursor/mcp.json`, `.cursor/`, `.cursor/rules`, `.gitignore` references). Documented Bolt.new integration and StackBlitz MCP capabilities.
+  - *Files touched*: `.gitignore`, `PROJECT_STATE.md`.
+  - *Next*: Configure Bolt connectors or StackBlitz MCP as needed.
 - **2026-11-09 22:56**: Ported Sahn design system refinements from Lovable to Next.js production codebase. Upgraded map pins to 40px rounded-[14px] buttons with M/Z/D/G category letter badges, hover-lift, and selected dark-ink state. Added `card-lift`, `courtyard-pattern`, `font-arabic-script`, `shadow-float/lift`, `quote-dot` pill animations, and `page-enter` fade-in to globals.css. Rewrote `RotatingQuote` with crossfade grid, hover-pause indicator, and expandable dot indicators. Updated PlaceBottomSheet to use `shadow-float` and OSM directions. Added `fade-in`/`quote-crossfade` keyframes to tailwind.config.ts. Committed `7603a48` and pushed — Vercel auto-deploying.
   - *Files touched*: `src/app/globals.css`, `tailwind.config.ts`, `src/components/map/MapContainer.tsx`, `src/components/contribute/RotatingQuote.tsx`, `src/components/map/MapHomeClient.tsx`, `src/components/sheet/PlaceBottomSheet.tsx`, `PROJECT_STATE.md`.
   - *Next*: Verify live at https://sufi-map.vercel.app. Add Supabase Auth redirect URL.
