@@ -1,10 +1,10 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Design system refinements live at https://sufi-map.vercel.app.
-- StackBlitz / Bolt MCP server (`stackblitz-mcp`) added to MCP config.
-- StackBlitz / Bolt integration ready: repo importable at https://bolt.new/github/MuhammedAjmalBinAshraf/Sufi-Map.
-- Production stable on Vercel; all 9 routes pass build cleanly.
+- Complete Lovable sanctuary experience ported to Next.js production app.
+- Production live and verified at https://sufi-map.vercel.app (deployment dpl_86q3inVqGTEMAv2KgybXtipmKXFp).
+- In-sidebar SiteDetail, collapsible sidebar, floating sacred quote banner over map, BadgesSheet drawer, and parchment badges live.
+- Working tree clean, synced to GitHub master.
 
 ## Done
 - Initialized Git repository and set safe directory rules.
@@ -64,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 23:31**: Full UI parity with Lovable sanctuary experience deployed to Vercel production. Built in-sidebar `SiteDetail` with back navigation, schedule pills, OSM directions, save toggling, and correction dialog; built `BadgesSheet` slide-out drawer with Arabic badges; added sidebar collapse/expand controls; added floating `RotatingQuote` banner centered over map canvas; added segmented `LocaleSwitcher` toggle; and added `parchment` badge variant. Verified production build and aliased to `sufi-map.vercel.app`.
+  - *Files touched*: `src/app/[locale]/page.tsx`, `src/components/map/MapHomeClient.tsx`, `src/components/sufi/SiteDetail.tsx`, `src/components/sufi/BadgesSheet.tsx`, `src/components/common/LocaleSwitcher.tsx`, `src/components/ui/badge.tsx`, `PROJECT_STATE.md`.
+  - *Next*: Test live on desktop and mobile viewports.
 - **2026-11-09 23:14**: Added `stackblitz` MCP server (`stackblitz-mcp`) to `mcp_config.json` for reading, listing, and resolving projects from StackBlitz / Bolt.
   - *Files touched*: `C:\Users\PAVALLION\.gemini\config\mcp_config.json`, `PROJECT_STATE.md`.
   - *Next*: Test StackBlitz project resolution and Bolt workflow.
