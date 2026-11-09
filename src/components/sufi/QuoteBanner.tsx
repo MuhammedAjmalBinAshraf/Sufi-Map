@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const ROTATE_MS = 9000;
 
 /** Rotating sacred words; hovering or focusing pauses the rotation. */
-export function QuoteBanner({ className }: { className?: string }) {
+export function QuoteBanner({ className, visible = true }: { className?: string; visible?: boolean }) {
   const { lang, t, pick } = useI18n();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -21,7 +21,13 @@ export function QuoteBanner({ className }: { className?: string }) {
 
   return (
     <figure
-      className={cn("relative rounded-[14px] border bg-card/95 px-5 py-4 shadow-float backdrop-blur", className)}
+      className={cn(
+        "relative rounded-[14px] border bg-card/95 px-5 py-4 shadow-float backdrop-blur transition-all duration-300 ease-out",
+        visible ? "pointer-events-auto opacity-100" : "pointer-events-none -translate-y-2 opacity-0",
+        className,
+      )}
+      inert={!visible}
+      aria-hidden={!visible}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
