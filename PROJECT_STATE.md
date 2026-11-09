@@ -2,7 +2,7 @@
 
 ## Current Status
 - Design system refinements live at https://sufi-map.vercel.app.
-- Cursor MCP configs removed as requested.
+- StackBlitz / Bolt MCP server (`stackblitz-mcp`) added to MCP config.
 - StackBlitz / Bolt integration ready: repo importable at https://bolt.new/github/MuhammedAjmalBinAshraf/Sufi-Map.
 - Production stable on Vercel; all 9 routes pass build cleanly.
 
@@ -64,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 23:14**: Added `stackblitz` MCP server (`stackblitz-mcp`) to `mcp_config.json` for reading, listing, and resolving projects from StackBlitz / Bolt.
+  - *Files touched*: `C:\Users\PAVALLION\.gemini\config\mcp_config.json`, `PROJECT_STATE.md`.
+  - *Next*: Test StackBlitz project resolution and Bolt workflow.
 - **2026-11-09 23:10**: Removed Cursor MCP configs (`~/.cursor/mcp.json`, `.cursor/`, `.cursor/rules`, `.gitignore` references). Documented Bolt.new integration and StackBlitz MCP capabilities.
   - *Files touched*: `.gitignore`, `PROJECT_STATE.md`.
   - *Next*: Configure Bolt connectors or StackBlitz MCP as needed.
