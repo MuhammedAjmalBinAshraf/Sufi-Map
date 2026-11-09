@@ -1,11 +1,10 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Deployed to Vercel at https://sufi-map.vercel.app with continuous deployment linked to GitHub.
-- Connected and pushed to GitHub: https://github.com/MuhammedAjmalBinAshraf/Sufi-Map.
-- Lovable MCP connected and project created: https://lovable.dev/projects/fe2cf5d9-005b-4a8e-96a0-c02b4a4afc06.
-- Live Lovable preview initialized at https://id-preview--fe2cf5d9-005b-4a8e-96a0-c02b4a4afc06.lovable.app.
-- "Sahn" design system tokens, typography, animations, and persistent knowledge stored in Lovable.
+- Lovable MapLibre swap completed (commit e72418a8) — Google Maps fully removed from Lovable project.
+- Porting Lovable design improvements to production Next.js codebase in progress.
+- Build verification running.
+- Production at https://sufi-map.vercel.app (auto-deploys on push to master).
 
 ## Done
 - Initialized Git repository and set safe directory rules.

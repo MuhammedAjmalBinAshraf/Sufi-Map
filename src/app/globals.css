@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Sahn Design System Tokens */
+    /* Sahn Design System — Sanctuary Courtyard tokens */
     --background: 50 33% 97%;          /* #FAF9F4 - Warm sanctuary canvas */
     --foreground: 120 8% 8%;           /* #121512 - Deep charcoal ink */
 
@@ -16,6 +16,7 @@
 
     --primary: 147 50% 24%;            /* #1F5C3A - Deep sanctuary green */
     --primary-foreground: 0 0% 100%;
+    --primary-hover: 150 50% 20%;      /* #17482D - darker hover */
 
     --secondary: 50 15% 92%;           /* Subtle warm stone */
     --secondary-foreground: 120 8% 8%;
@@ -23,7 +24,7 @@
     --muted: 50 12% 92%;
     --muted-foreground: 132 5% 38%;    /* #5D675F - Muted text */
 
-    --accent: 50 20% 93%;
+    --accent: 50 20% 93%;              /* Parchment accent */
     --accent-foreground: 147 50% 24%;
 
     --destructive: 0 72% 51%;
@@ -32,14 +33,23 @@
     --border: 50 19% 87%;              /* #E4E2D8 - Warm border */
     --input: 50 19% 87%;
     --ring: 147 50% 24%;
+    --overlay: 120 8% 8% / 0.28;
 
     --radius: 0.875rem;                /* 14px - Sanctuary corner radius */
 
     --map-background: 75 22% 93%;      /* #EEF0E6 */
+
+    /* Elevation shadows */
+    --shadow-lift: 0 8px 24px hsl(120 8% 8% / 0.06);
+    --shadow-float: 0 12px 40px -12px hsl(120 8% 8% / 0.18);
   }
 
   * {
     @apply border-border;
+  }
+
+  html, body {
+    height: 100%;
   }
 
   body {
@@ -47,6 +57,64 @@
     background-color: #FAF9F4;
     color: #121512;
     min-height: 100vh;
+  }
+
+  /* Serif headings for the sanctuary feeling */
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif), "Playfair Display", serif;
+    letter-spacing: -0.01em;
+  }
+
+  /* Arabic — full script treatment with relaxed leading */
+  [lang="ar"] body,
+  [lang="ar"] h1,
+  [lang="ar"] h2,
+  [lang="ar"] h3,
+  [lang="ar"] h4 {
+    font-family: var(--font-arabic), "Amiri", serif;
+    letter-spacing: 0;
+    line-height: 1.625;
+  }
+}
+
+/* ─── Card lift: shared hover elevation for listing + badge cards ─── */
+@layer utilities {
+  .card-lift {
+    transition-property: transform, box-shadow, border-color;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  /* Faint courtyard tiling — behind map while loading or in error state */
+  .courtyard-pattern {
+    background-color: hsl(var(--accent));
+    background-image:
+      radial-gradient(circle at 50% 50%, hsl(var(--border)) 1.5px, transparent 1.5px),
+      linear-gradient(45deg, transparent 48%, hsl(var(--border)) 49%, hsl(var(--border)) 51%, transparent 52%),
+      linear-gradient(-45deg, transparent 48%, hsl(var(--border)) 49%, hsl(var(--border)) 51%, transparent 52%);
+    background-size:
+      28px 28px,
+      56px 56px,
+      56px 56px;
+  }
+
+  /* Arabic script utility */
+  .font-arabic-script {
+    font-family: var(--font-arabic), "Amiri", serif;
+    line-height: 1.75;
+  }
+
+  /* Floating shadow utility */
+  .shadow-float {
+    box-shadow: var(--shadow-float);
+  }
+
+  .shadow-lift {
+    box-shadow: var(--shadow-lift);
   }
 }
 
@@ -70,7 +138,7 @@
   font-family: var(--font-arabic), "Amiri", serif;
 }
 
-/* MapLibre GL Container & Canvas Overrides */
+/* ─── MapLibre GL overrides ─── */
 .maplibregl-map {
   font-family: inherit;
   width: 100% !important;
@@ -88,7 +156,7 @@
   outline: none;
 }
 
-/* Custom Sanctuary Marker Styling */
+/* ─── Sanctuary pin markers ─── */
 .sufi-pin-marker {
   cursor: pointer;
   z-index: 10;
@@ -98,4 +166,72 @@
 .sufi-pin-marker:hover {
   z-index: 25;
 }
+
+/* Pin button micro-interaction */
+.sufi-pin-btn {
+  transition: transform 250ms ease-out, background-color 200ms ease-out,
+    box-shadow 250ms ease-out;
+}
+
+.sufi-pin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-float);
+}
+
+.sufi-pin-btn[data-selected="true"] {
+  transform: scale(1.1);
+  background-color: #121512;
+}
+
+/* ─── Quote banner dots ─── */
+.quote-dot {
+  height: 6px;
+  border-radius: 9999px;
+  transition: width 250ms ease-out, background-color 200ms ease-out;
+  background-color: hsl(var(--border));
+  cursor: pointer;
+}
+
+.quote-dot[data-active="true"] {
+  width: 24px;
+  background-color: hsl(var(--primary));
+}
+
+.quote-dot:not([data-active="true"]) {
+  width: 8px;
+}
+
+.quote-dot:not([data-active="true"]):hover {
+  background-color: hsl(var(--muted-foreground));
+}
+
+/* ─── Mobile bottom sheet ─── */
+.bottom-sheet {
+  transition: height 300ms ease-out;
+}
+
+/* ─── Smooth page transitions ─── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: fade-in 300ms ease-out both;
+}
+
+/* ─── Filter chip active / hover states ─── */
+.filter-chip {
+  transition: all 250ms ease-out;
+}
+
+.filter-chip[data-active="true"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+/* ─── Hide scrollbar for filter chip rows ─── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 

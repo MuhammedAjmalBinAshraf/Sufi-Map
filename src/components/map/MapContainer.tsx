@@ -295,37 +295,56 @@ const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function 
     Object.values(markersRef.current).forEach((marker) => marker.remove());
     markersRef.current = {};
 
+    const KIND_LETTER: Record<string, string> = {
+      maqam: "M", zawiya: "Z", dargah: "D", gathering: "G",
+    };
+
     places.forEach((place) => {
+      const isSelected = selectedPlace?.id === place.id;
+      const letter = KIND_LETTER[place.kind] ?? "•";
+
+      // Root group wrapper — data-selected drives CSS state
       const el = document.createElement("div");
       el.className = "sufi-pin-marker group";
+      el.dataset["selected"] = String(isSelected);
 
-      const isSelected = selectedPlace?.id === place.id;
+      // 40px rounded sanctuary pin (button for a11y)
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.setAttribute("aria-label", place.name_en);
+      btn.title = place.name_en;
+      btn.className = [
+        "sufi-pin-btn",
+        "relative flex size-10 cursor-pointer items-center justify-center",
+        "rounded-[14px] border-2 border-white bg-[#1F5C3A] text-white",
+        "shadow-md transition-all duration-200",
+        isSelected ? "scale-110 !bg-[#121512] shadow-xl" : "",
+      ].join(" ");
 
-      el.innerHTML = `
-        <div class="relative flex flex-col items-center">
-          <div class="w-10 h-10 rounded-full ${
-            isSelected
-              ? "bg-[#1F5C3A] ring-4 ring-[#1F5C3A]/30 scale-110 shadow-xl"
-              : "bg-[#1F5C3A] hover:scale-105 shadow-md"
-          } text-white flex items-center justify-center border-2 border-white transition-all duration-200">
-            <svg class="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-          </div>
-          <div class="w-2.5 h-2.5 bg-[#1F5C3A] rotate-45 -mt-1.5 rounded-xs"></div>
-          <div class="mt-1 px-2.5 py-0.5 bg-white/95 backdrop-blur-sm rounded-full shadow-xs border border-[#E4E2D8] text-[11px] font-medium text-[#121512] whitespace-nowrap opacity-90 group-hover:opacity-100 font-serif">
-            ${place.name_en}
-          </div>
-        </div>
+      // Category letter badge
+      btn.innerHTML = `
+        <svg width="18" height="20" viewBox="0 0 18 20" fill="none"
+             stroke="currentColor" stroke-width="1.8"
+             stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+          <path d="M9 1v3"/>
+          <path d="M9 4C4.8 6.4 2.5 9.5 2.5 12.7V19h13v-6.3C15.5 9.5 13.2 6.4 9 4z"/>
+          <path d="M7.5 19v-3.5a1.5 1.5 0 0 1 3 0V19"/>
+        </svg>
+        <span class="absolute -top-2 -right-2 flex size-5 items-center justify-center
+                     rounded-full border border-[#E4E2D8] bg-[#FAF9F4]
+                     font-serif text-[10px] font-bold text-[#1F5C3A]">
+          ${letter}
+        </span>
       `;
 
-      el.addEventListener("click", (e) => {
+      btn.addEventListener("click", (e) => {
         e.stopPropagation();
         onSelectPlace(place);
       });
 
-      const marker = new maplibregl.Marker({ element: el })
+      el.appendChild(btn);
+
+      const marker = new maplibregl.Marker({ element: el, anchor: "bottom" })
         .setLngLat([place.longitude, place.latitude])
         .addTo(map);
 

@@ -270,10 +270,10 @@ export function MapHomeClient({ initialPlaces }: MapHomeClientProps) {
                 <div
                   key={place.id}
                   onClick={() => setSelectedPlace(place)}
-                  className={`p-3.5 rounded-[14px] border cursor-pointer transition-all duration-150 ${
+                  className={`card-lift w-full text-start p-3.5 rounded-[14px] border cursor-pointer transition-colors ${
                     isSelected
                       ? "bg-primary/5 border-primary shadow-sm"
-                      : "bg-white border-border hover:border-primary/40 hover:bg-sahn-bg/50"
+                      : "bg-white border-border hover:border-primary/30"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -318,7 +318,7 @@ export function MapHomeClient({ initialPlaces }: MapHomeClientProps) {
                     </span>
 
                     <a
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}`}
+                      href={`https://www.openstreetmap.org/directions?route=;${place.latitude},${place.longitude}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}

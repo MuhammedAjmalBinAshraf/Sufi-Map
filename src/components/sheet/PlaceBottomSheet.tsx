@@ -64,7 +64,7 @@ export function PlaceBottomSheet({ place, onClose }: PlaceBottomSheetProps) {
   };
 
   const handleDirections = () => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}`;
+    const url = `https://www.openstreetmap.org/directions?route=;${place.latitude},${place.longitude}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -83,7 +83,7 @@ export function PlaceBottomSheet({ place, onClose }: PlaceBottomSheetProps) {
     place.sources && place.sources.length > 0 ? place.sources[0] : null;
 
   return (
-    <Card className="fixed bottom-14 left-0 right-0 z-40 max-w-md mx-auto w-full bg-white rounded-t-[20px] rounded-b-none shadow-[0_-8px_30px_rgba(0,0,0,0.08)] border-t border-x-0 border-b-0 border-border animate-in slide-in-from-bottom duration-200">
+    <Card className="fixed bottom-14 left-0 right-0 z-40 max-w-md mx-auto w-full bg-white rounded-t-[14px] rounded-b-none shadow-float border-t border-x-0 border-b-0 border-border animate-in slide-in-from-bottom duration-300">
       {/* Top Grab Handle & Close Bar */}
       <div className="flex items-center justify-between px-4 pt-2.5 pb-1">
         <div className="w-10 h-1 rounded-full bg-border/80 mx-auto" />
