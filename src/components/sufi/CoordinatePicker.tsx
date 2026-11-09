@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import type { Map as MapLibreMap, Marker } from "maplibre-gl";
 import { LocateFixed } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useGoogleMaps } from "@/hooks/use-google-maps";
-import { pinIcon, SAHN_MAP_STYLES } from "@/lib/google-maps";
+import { useMapLibre } from "@/hooks/use-maplibre";
 import { useI18n } from "@/lib/i18n";
+import { BASEMAP_STYLE, createPinElement, MAX_ZOOM, observeResize } from "@/lib/maplibre";
 import { KERALA_CENTER, type SiteKind } from "@/lib/sites";
 
 interface CoordinatePickerProps {
@@ -19,52 +20,67 @@ interface CoordinatePickerProps {
 const round = (n: number) => Math.round(n * 1e5) / 1e5;
 
 export function CoordinatePicker({ lat, lng, kind, onChange }: CoordinatePickerProps) {
-  const status = useGoogleMaps();
+  const { status, ml } = useMapLibre();
   const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const markerRef = useRef<{ marker: Marker; kind: SiteKind } | null>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
   const [locating, setLocating] = useState(false);
 
   useEffect(() => {
-    if (status !== "ready" || !containerRef.current || mapRef.current) return;
-    const map = new google.maps.Map(containerRef.current, {
-      center: lat !== undefined && lng !== undefined ? { lat, lng } : KERALA_CENTER,
-      zoom: lat !== undefined ? 13 : 7,
-      styles: SAHN_MAP_STYLES,
-      clickableIcons: false,
-      disableDefaultUI: true,
-      zoomControl: true,
-      gestureHandling: "greedy",
+    const container = containerRef.current;
+    if (!ml || !container) return;
+    const hasPoint = lat !== undefined && lng !== undefined;
+    const map = new ml.Map({
+      container,
+      style: BASEMAP_STYLE,
+      center: hasPoint ? [lng, lat] : [KERALA_CENTER.lng, KERALA_CENTER.lat],
+      zoom: hasPoint ? 13 : 6.5,
+      maxZoom: MAX_ZOOM,
+      attributionControl: { compact: true },
     });
-    map.addListener("click", (e: google.maps.MapMouseEvent) => {
-      if (e.latLng) onChangeRef.current(round(e.latLng.lat()), round(e.latLng.lng()));
-    });
+    map.addControl(new ml.NavigationControl({ showCompass: false }), "bottom-right");
+    map.on("click", (e) => onChangeRef.current(round(e.lngLat.lat), round(e.lngLat.lng)));
     mapRef.current = map;
-    // Initial center only; later updates move the marker instead.
+    const stopObserving = observeResize(map, container);
+    return () => {
+      stopObserving();
+      map.remove();
+      mapRef.current = null;
+      markerRef.current = null;
+    };
+    // Initial view only; later coordinate changes move the pin instead.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  }, [ml]);
 
+  // Draggable pin follows the coordinates; it is rebuilt when the category changes.
   useEffect(() => {
     const map = mapRef.current;
-    if (status !== "ready" || !map) return;
+    if (!ml || !map) return;
+    const pinKind = kind ?? "maqam";
     if (lat === undefined || lng === undefined) {
-      markerRef.current?.setMap(null);
+      markerRef.current?.marker.remove();
+      markerRef.current = null;
       return;
     }
-    if (!markerRef.current) {
-      const marker = new google.maps.Marker({ map, draggable: true, position: { lat, lng } });
-      marker.addListener("dragend", (e: google.maps.MapMouseEvent) => {
-        if (e.latLng) onChangeRef.current(round(e.latLng.lat()), round(e.latLng.lng()));
-      });
-      markerRef.current = marker;
+    if (markerRef.current && markerRef.current.kind !== pinKind) {
+      markerRef.current.marker.remove();
+      markerRef.current = null;
     }
-    markerRef.current.setMap(map);
-    markerRef.current.setPosition({ lat, lng });
-    markerRef.current.setIcon(pinIcon(kind ?? "maqam", false));
-  }, [status, lat, lng, kind]);
+    if (!markerRef.current) {
+      const marker = new ml.Marker({ element: createPinElement(pinKind, t("pickHint")), anchor: "bottom", draggable: true })
+        .setLngLat([lng, lat])
+        .addTo(map);
+      marker.on("dragend", () => {
+        const p = marker.getLngLat();
+        onChangeRef.current(round(p.lat), round(p.lng));
+      });
+      markerRef.current = { marker, kind: pinKind };
+    }
+    markerRef.current.marker.setLngLat([lng, lat]);
+  }, [ml, lat, lng, kind, t]);
 
   const locate = () => {
     if (!navigator.geolocation) return;
@@ -74,22 +90,21 @@ export function CoordinatePicker({ lat, lng, kind, onChange }: CoordinatePickerP
         setLocating(false);
         const next = { lat: round(pos.coords.latitude), lng: round(pos.coords.longitude) };
         onChange(next.lat, next.lng);
-        mapRef.current?.panTo(next);
-        mapRef.current?.setZoom(14);
+        mapRef.current?.easeTo({ center: [next.lng, next.lat], zoom: 14 });
       },
       () => setLocating(false),
       { enableHighAccuracy: true, timeout: 10000 },
     );
   };
 
-  const hasMap = status === "ready" || status === "loading";
+  const hasMap = status !== "error";
 
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">{hasMap ? t("pickHint") : t("pickHintNoMap")}</p>
       {hasMap && (
-        <div className="courtyard-pattern h-56 overflow-hidden rounded-[14px] border">
-          <div ref={containerRef} className="h-full w-full" />
+        <div className="courtyard-pattern relative h-56 overflow-hidden rounded-[14px] border">
+          <div ref={containerRef} className="absolute inset-0" />
         </div>
       )}
       <div className="grid grid-cols-2 gap-3">
