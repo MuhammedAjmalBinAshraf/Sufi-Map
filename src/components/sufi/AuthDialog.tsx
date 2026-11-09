@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Loader2, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 
@@ -222,7 +223,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
             </form>
 
             {/* Switch between Sign In and Sign Up */}
-            <div className="text-center pt-1">
+            <div className="text-center pt-1 space-y-2">
               <button
                 type="button"
                 onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
@@ -232,6 +233,18 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                   ? "Don't have an account? Sign up"
                   : "Already have an account? Sign in"}
               </button>
+
+              <p className="text-[11px] text-muted-foreground leading-relaxed pt-1 border-t border-border/60">
+                By signing in, you agree to our{" "}
+                <Link to="/terms" onClick={() => onOpenChange(false)} className="text-primary underline">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link to="/privacy" onClick={() => onOpenChange(false)} className="text-primary underline">
+                  Privacy Policy
+                </Link>
+                .
+              </p>
             </div>
           </div>
         )}

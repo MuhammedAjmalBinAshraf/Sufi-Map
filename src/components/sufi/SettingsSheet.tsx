@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -75,6 +76,20 @@ export function SettingsSheet({ open, onOpenChange }: { open: boolean; onOpenCha
                 </ToggleGroup>
               </div>
             )}
+          </section>
+
+          {/* Legal / Google Verification Links */}
+          <section className="space-y-2 border-t pt-5 text-xs text-muted-foreground">
+            <p className="font-mono uppercase tracking-wider text-[10px]">Legal & Policies</p>
+            <div className="flex items-center gap-4">
+              <Link to="/privacy" onClick={() => onOpenChange(false)} className="text-primary hover:underline">
+                Privacy Policy
+              </Link>
+              <span>·</span>
+              <Link to="/terms" onClick={() => onOpenChange(false)} className="text-primary hover:underline">
+                Terms of Service
+              </Link>
+            </div>
           </section>
         </div>
       </SheetContent>
