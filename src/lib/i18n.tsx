@@ -101,6 +101,14 @@ const en = {
   "badge.nazir": "Nazir",
   "badge.nazir.desc": "Watchful — share two gentle corrections.",
   close: "Close",
+  settings: "Settings",
+  settingsIntro: "Shape the map to your way of reading. Saved on this device.",
+  quoteSettingHint: "Choose when the rotating words appear over the map.",
+  "quoteMode.always": "Always show",
+  "quoteMode.explore": "Hide while I explore the map",
+  "quoteMode.hidden": "Keep hidden",
+  quoteReturn: "Bring the words back after",
+  seconds: "{n}s",
 };
 
 export type I18nKey = keyof typeof en;
@@ -202,6 +210,14 @@ const ml: Dict = {
   "badge.nazir": "നാസിർ",
   "badge.nazir.desc": "ശ്രദ്ധാലു — രണ്ട് തിരുത്തുകൾ പങ്കുവെക്കുക.",
   close: "അടയ്ക്കുക",
+  settings: "ക്രമീകരണങ്ങൾ",
+  settingsIntro: "മാപ്പ് നിങ്ങളുടെ രീതിക്ക് ഒരുക്കുക. ഈ ഉപകരണത്തിൽ സൂക്ഷിക്കുന്നു.",
+  quoteSettingHint: "മാപ്പിന് മുകളിൽ വചനങ്ങൾ എപ്പോൾ കാണിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക.",
+  "quoteMode.always": "എപ്പോഴും കാണിക്കുക",
+  "quoteMode.explore": "മാപ്പ് നോക്കുമ്പോൾ മറയ്ക്കുക",
+  "quoteMode.hidden": "മറച്ചുവെക്കുക",
+  quoteReturn: "വചനങ്ങൾ തിരികെ കാണിക്കുന്നത്",
+  seconds: "{n} സെ.",
 };
 
 const ar: Dict = {
@@ -300,6 +316,14 @@ const ar: Dict = {
   "badge.nazir": "ناظر",
   "badge.nazir.desc": "شارك تصحيحين بلطف.",
   close: "إغلاق",
+  settings: "الإعدادات",
+  settingsIntro: "هيّئ الخريطة على طريقتك. تُحفظ على هذا الجهاز.",
+  quoteSettingHint: "اختر متى تظهر الكلمات المتناوبة فوق الخريطة.",
+  "quoteMode.always": "إظهار دائمًا",
+  "quoteMode.explore": "إخفاء أثناء تصفح الخريطة",
+  "quoteMode.hidden": "إخفاء دائمًا",
+  quoteReturn: "إعادة الكلمات بعد",
+  seconds: "{n} ث",
 };
 
 const DICTS: Record<Lang, Dict> = { en, ml, ar };
