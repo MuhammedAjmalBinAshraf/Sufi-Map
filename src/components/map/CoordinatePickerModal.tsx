@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { MapPin, Check, Crosshair } from "lucide-react";
+import { getEffectiveTileUrl } from "./MapContainer";
 
 interface CoordinatePickerModalProps {
   open: boolean;
@@ -54,11 +55,9 @@ export function CoordinatePickerModal({
           sources: {
             "picker-osm": {
               type: "raster",
-              tiles: [
-                "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-              ],
+              tiles: [getEffectiveTileUrl("sahn-warm")],
               tileSize: 256,
-              attribution: "&copy; OpenStreetMap",
+              attribution: "&copy; OpenStreetMap & CartoDB",
             },
           },
           layers: [

@@ -33,6 +33,26 @@ const TILE_URLS: Record<BasemapStyle, string> = {
   terrain: "https://tile.opentopomap.org/{z}/{x}/{y}.png",
 };
 
+export function getEffectiveTileUrl(style: BasemapStyle): string {
+  const apiKey = process.env.NEXT_PUBLIC_MAP_API_KEY;
+  if (style === "sahn-warm" && process.env.NEXT_PUBLIC_MAP_TILE_URL) {
+    let custom = process.env.NEXT_PUBLIC_MAP_TILE_URL;
+    if (apiKey && custom.includes("{key}")) {
+      custom = custom.replace("{key}", apiKey);
+    }
+    return custom;
+  }
+  let url = TILE_URLS[style] || TILE_URLS["sahn-warm"];
+  if (apiKey && style === "sahn-warm") {
+    if (url.includes("{key}")) {
+      url = url.replace("{key}", apiKey);
+    } else if (url.includes("cartocdn.com") && !url.includes("api_key=")) {
+      url = `${url}?api_key=${apiKey}`;
+    }
+  }
+  return url;
+}
+
 const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function MapContainer(
   {
     places,
@@ -104,11 +124,12 @@ const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function 
 
     const initialLng = selectedPlace ? selectedPlace.longitude : 75.9234;
     const initialLat = selectedPlace ? selectedPlace.latitude : 11.0489;
-    const customStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL;
-    const tileUrl =
-      (basemapStyle === "sahn-warm" && process.env.NEXT_PUBLIC_MAP_TILE_URL)
-        ? process.env.NEXT_PUBLIC_MAP_TILE_URL
-        : TILE_URLS[basemapStyle] || TILE_URLS["sahn-warm"];
+    let customStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL;
+    const apiKey = process.env.NEXT_PUBLIC_MAP_API_KEY;
+    if (customStyleUrl && apiKey && customStyleUrl.includes("{key}")) {
+      customStyleUrl = customStyleUrl.replace("{key}", apiKey);
+    }
+    const tileUrl = getEffectiveTileUrl(basemapStyle);
 
     const defaultRasterStyle: maplibregl.StyleSpecification = {
       version: 8,
@@ -177,7 +198,7 @@ const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function 
     if (!map || currentStyleRef.current === basemapStyle) return;
 
     currentStyleRef.current = basemapStyle;
-    const tileUrl = TILE_URLS[basemapStyle];
+    const tileUrl = getEffectiveTileUrl(basemapStyle);
     if (!tileUrl) return;
 
     const source = map.getSource("sufi-basemap") as maplibregl.RasterTileSource;

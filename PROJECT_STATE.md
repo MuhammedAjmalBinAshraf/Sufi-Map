@@ -64,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 21:18**: Integrated Carto map API key (`NEXT_PUBLIC_MAP_API_KEY`) into `MapContainer` and `CoordinatePickerModal` with dynamic `getEffectiveTileUrl` helper, supporting authenticated Carto tiles and custom style URLs. Verified local production build and pushed to GitHub for automated Vercel deployment.
+  - *Files touched*: `src/components/map/MapContainer.tsx`, `src/components/map/CoordinatePickerModal.tsx`, `PROJECT_STATE.md`.
+  - *Next*: Test authenticated map tile performance in production.
 - **2026-11-09 21:00**: Linked Vercel project directly to GitHub repository (`MuhammedAjmalBinAshraf/Sufi-Map`) enabling automated CI/CD builds on push to `master`.
   - *Files touched*: `PROJECT_STATE.md`.
   - *Next*: Phase 1 production testing and community contributor validation.
