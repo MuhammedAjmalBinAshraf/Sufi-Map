@@ -2,6 +2,7 @@
 
 ## Current Status
 - Deployed to Vercel at https://sufi-map.vercel.app with all production environment variables set.
+- Connected and pushed to GitHub repository: https://github.com/MuhammedAjmalBinAshraf/Sufi-Map.
 - Supabase MCP configured and connected to project `lykrakuypnfbnjzfhwhj`.
 - All database migrations (PostGIS schema, RLS policies, seed quotes/sample data, storage bucket) applied and verified in Supabase.
 - Full Phase 1 features operational across Web, Database, and Storage layers.
@@ -62,6 +63,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 20:43**: Connected repository to remote GitHub repository `MuhammedAjmalBinAshraf/Sufi-Map`. Cleaned `.gitignore` (ignoring `.vercel` and `supabase/.temp/`), committed full migration scripts and lockfile updates, and pushed `master` branch with sanitized remote URLs.
+  - *Files touched*: `.gitignore`, `package.json`, `package-lock.json`, `supabase/sufi_map_full_migration.sql`, `PROJECT_STATE.md`.
+  - *Next*: Link Vercel project to GitHub repository for automated CI/CD if desired.
 - **2026-11-09 20:25**: Applied full Supabase migration via Supabase MCP server (`apply_migration`): PostGIS extensions, tables (`profiles`, `places`, `persons`, `gatherings`, `corrections`, `quotes`, `badges`, `user_badges`), comprehensive RLS policies, seed quotes and sample places/persons/gatherings, and `place-photos` storage bucket with access policies. Verified database counts and storage configuration.
   - *Files touched*: `PROJECT_STATE.md`.
   - *Next*: Test auth workflows and live app integration.
