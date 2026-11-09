@@ -14,6 +14,7 @@ import { SubmitDialog } from "@/components/sufi/SubmitDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { shouldShowQuote, usePreferences } from "@/lib/preferences";
+import type { SheetSnap } from "@/lib/sheet";
 import { filterSites, SITES, type SiteKind } from "@/lib/sites";
 
 export const Route = createFileRoute("/")({
@@ -37,13 +38,13 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<SiteKind | "all">("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [submitOpen, setSubmitOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
-  const [sheetExpanded, setSheetExpanded] = useState(false);
+  const [sheetSnap, setSheetSnap] = useState<SheetSnap>("half");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { prefs } = usePreferences();
 
@@ -66,7 +67,7 @@ function Index() {
 
   const select = (id: string) => {
     setSelectedId(id);
-    setSheetExpanded(false);
+    setSheetSnap("half");
   };
 
   const actions = (
@@ -139,7 +140,12 @@ function Index() {
       </main>
 
       {/* Mobile: thumb-zone sheet */}
-      <MobileSheet expanded={sheetExpanded} onExpandedChange={setSheetExpanded} header={filters}>
+      <MobileSheet
+        snap={sheetSnap}
+        onSnapChange={setSheetSnap}
+        peekLabel={selected ? selected.name[lang] : t("sheetPeek", { n: sites.length })}
+        header={filters}
+      >
         {body}
       </MobileSheet>
 
