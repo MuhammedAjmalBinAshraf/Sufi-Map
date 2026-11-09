@@ -28,10 +28,12 @@ export function SiteDetail({ site, onBack }: { site: Site; onBack: () => void })
 
   return (
     <article className="animate-in fade-in-0 slide-in-from-bottom-1 duration-300">
-      <Button variant="ghost" size="sm" onClick={onBack} className="-ms-2 mb-3 text-muted-foreground">
-        <ArrowLeft className="rtl:rotate-180" aria-hidden />
-        {t("back")}
-      </Button>
+      <div className="mb-3">
+        <Button variant="ghost" size="sm" onClick={onBack} className="-ms-2 text-muted-foreground">
+          <ArrowLeft className="rtl:rotate-180" aria-hidden />
+          {t("back")}
+        </Button>
+      </div>
 
       <KindBadge kind={site.kind} />
       <h2 className="mt-3 text-2xl leading-tight">{pick(site.name)}</h2>
