@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Award, MoonStar, Plus, Settings } from "lucide-react";
+import { Award, MoonStar, PanelLeftClose, PanelLeftOpen, Plus, Settings } from "lucide-react";
 
 import { BadgesSheet } from "@/components/sufi/BadgesSheet";
 import { LanguageToggle } from "@/components/sufi/LanguageToggle";
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { shouldShowQuote, usePreferences } from "@/lib/preferences";
 import type { SheetSnap } from "@/lib/sheet";
+import { cn } from "@/lib/utils";
 import { filterSites, SITES, type SiteKind } from "@/lib/sites";
 
 export const Route = createFileRoute("/")({
@@ -45,6 +46,7 @@ function Index() {
   const [submitOpen, setSubmitOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
   const [sheetSnap, setSheetSnap] = useState<SheetSnap>("half");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { prefs } = usePreferences();
 
@@ -97,17 +99,36 @@ function Index() {
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-background">
       {/* Desktop: docked sanctuary sidebar */}
-      <aside className="hidden w-[420px] shrink-0 flex-col border-e bg-background md:flex">
+      <aside
+        inert={!sidebarOpen}
+        className={cn(
+          "hidden shrink-0 overflow-hidden bg-background transition-[width] duration-300 ease-out md:flex",
+          sidebarOpen ? "w-[420px] border-e" : "w-0",
+        )}
+      >
+        <div className="flex w-[420px] shrink-0 flex-col">
         <header className="space-y-4 border-b p-6 pb-5">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start justify-between gap-2">
             <Brand />
-            <LanguageToggle />
+            <div className="flex items-center gap-1.5">
+              <LanguageToggle />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSidebarOpen(false)}
+                aria-label={t("collapseMenu")}
+                title={t("collapseMenu")}
+              >
+                <PanelLeftClose className="rtl:-scale-x-100" aria-hidden />
+              </Button>
+            </div>
           </div>
           <p className="text-sm text-muted-foreground">{t("tagline")}</p>
           {actions}
         </header>
         {filters && <div className="border-b p-6 py-4">{filters}</div>}
         <div className="min-h-0 flex-1 overflow-y-auto p-6 pt-4">{body}</div>
+        </div>
       </aside>
 
       {/* Map */}
@@ -132,6 +153,20 @@ function Index() {
           </div>
           <QuoteBanner visible={quoteVisible} />
         </div>
+
+        {/* Desktop: bring the list back when it is tucked away */}
+        {!sidebarOpen && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setSidebarOpen(true)}
+            aria-label={t("expandMenu")}
+            title={t("expandMenu")}
+            className="absolute start-5 top-5 z-20 hidden bg-card shadow-float md:inline-flex"
+          >
+            <PanelLeftOpen className="rtl:-scale-x-100" aria-hidden />
+          </Button>
+        )}
 
         {/* Desktop: quote over the map */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 hidden justify-center p-5 md:flex">
