@@ -1,11 +1,11 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Deployed to Vercel at https://sufi-map.vercel.app with all production environment variables set and continuous deployment linked to GitHub.
-- Connected and pushed to GitHub repository: https://github.com/MuhammedAjmalBinAshraf/Sufi-Map.
-- Supabase MCP configured and connected to project `lykrakuypnfbnjzfhwhj`.
-- All database migrations (PostGIS schema, RLS policies, seed quotes/sample data, storage bucket) applied and verified in Supabase.
-- Full Phase 1 features operational across Web, Database, and Storage layers.
+- Deployed to Vercel at https://sufi-map.vercel.app with continuous deployment linked to GitHub.
+- Connected and pushed to GitHub: https://github.com/MuhammedAjmalBinAshraf/Sufi-Map.
+- Lovable MCP connected and project created: https://lovable.dev/projects/fe2cf5d9-005b-4a8e-96a0-c02b4a4afc06.
+- Live Lovable preview initialized at https://id-preview--fe2cf5d9-005b-4a8e-96a0-c02b4a4afc06.lovable.app.
+- "Sahn" design system tokens, typography, animations, and persistent knowledge stored in Lovable.
 
 ## Done
 - Initialized Git repository and set safe directory rules.
@@ -64,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 22:15**: Initialized Lovable project (`fe2cf5d9-005b-4a8e-96a0-c02b4a4afc06`) via Lovable MCP. Configured persistent "Sahn" design system knowledge (palette tokens, 14px radius, Playfair Display/Inter/Amiri typography, micro-interactions, mobile bottom sheet & desktop 420px dock). Enforced token minimization and clean shadcn/ui modular component structure.
+  - *Files touched*: `PROJECT_STATE.md`.
+  - *Next*: Inspect generated Lovable components and integrate refinements into production codebase.
 - **2026-11-09 21:33**: Fixed zoom limit issue where map displayed "map data not available" and turned blank green. Upgraded Carto basemap to load official MapLibre vector style (`https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?key=...`) and enforced `maxZoom: 19` / source `maxzoom` bounds with automatic overzooming across raster styles and modal coordinate picker.
   - *Files touched*: `src/components/map/MapContainer.tsx`, `src/components/map/CoordinatePickerModal.tsx`, `PROJECT_STATE.md`.
   - *Next*: Verify continuous zoom in live production site.
