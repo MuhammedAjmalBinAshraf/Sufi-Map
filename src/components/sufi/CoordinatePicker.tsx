@@ -104,7 +104,9 @@ export function CoordinatePicker({ lat, lng, kind, onChange }: CoordinatePickerP
       <p className="text-sm text-muted-foreground">{hasMap ? t("pickHint") : t("pickHintNoMap")}</p>
       {hasMap && (
         <div className="courtyard-pattern relative h-56 overflow-hidden rounded-[14px] border">
-          <div ref={containerRef} className="absolute inset-0" />
+          <div className="absolute inset-0">
+            <div ref={containerRef} className="h-full w-full" />
+          </div>
         </div>
       )}
       <div className="grid grid-cols-2 gap-3">
