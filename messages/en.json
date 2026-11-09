@@ -12,6 +12,8 @@
     "share": "Share",
     "close": "Close",
     "cancel": "Cancel",
+    "collapseMenu": "Hide the list",
+    "expandMenu": "Show the list",
     "submit": "Submit",
     "uploading": "Uploading...",
     "loading": "Loading..."

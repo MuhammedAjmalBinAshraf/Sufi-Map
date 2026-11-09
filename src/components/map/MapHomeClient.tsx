@@ -213,8 +213,8 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
                   variant="ghost"
                   size="icon"
                   onClick={() => setSidebarOpen(false)}
-                  aria-label="Collapse menu"
-                  title="Collapse menu"
+                  aria-label={t("common.collapseMenu")}
+                  title={t("common.collapseMenu")}
                   className="size-8 rounded-[10px] text-muted-foreground hover:text-foreground hover:bg-accent"
                 >
                   <PanelLeftClose className="size-4 rtl:-scale-x-100" aria-hidden />
@@ -397,8 +397,8 @@ export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps
             variant="outline"
             size="icon"
             onClick={() => setSidebarOpen(true)}
-            aria-label="Expand menu"
-            title="Expand menu"
+            aria-label={t("common.expandMenu")}
+            title={t("common.expandMenu")}
             className="absolute start-5 top-5 z-20 hidden md:inline-flex bg-card shadow-float rounded-[12px] border-border hover:bg-accent"
           >
             <PanelLeftOpen className="size-4 rtl:-scale-x-100 text-foreground" aria-hidden />
