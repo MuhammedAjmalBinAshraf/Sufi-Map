@@ -97,6 +97,16 @@
     height: 100%;
   }
 
+  /* Phones: a slightly smaller type scale (15px) so the map keeps room; desktop stays 16px. */
+  html {
+    font-size: 93.75%;
+  }
+  @media (min-width: 48rem) {
+    html {
+      font-size: 100%;
+    }
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
