@@ -57,6 +57,9 @@
 - None for Phase 1. Database schema, UI, and desktop map controls are ready.
 
 ## Changelog
+- **2026-11-09**: Added environment variable configuration for custom map providers (`NEXT_PUBLIC_MAP_API_KEY` and `NEXT_PUBLIC_MAP_STYLE_URL`) in `MapContainer.tsx`, `.env.example`, and created `.env.local` for local secrets.
+  - *Files touched*: `.env.example`, `src/components/map/MapContainer.tsx`, `PROJECT_STATE.md`.
+  - *Next*: Connect provider tile/style URL once confirmed by user.
 - **2026-11-09**: Completed Web Design & Map Setup. Built responsive desktop split-screen layout, desktop header navbar, floating map controls with basemap switcher, geolocation, region presets, and coordinate picker modal integrated into contribute form. Fixed map visibility with ResizeObserver and CartoDB Voyager warm basemap. Polished Place, Person, Gatherings, Contribute, Me, and Admin pages for desktop viewports.
   - *Files touched*: `src/app/globals.css`, `src/components/navigation/DesktopHeader.tsx`, `src/components/map/MapControls.tsx`, `src/components/map/CoordinatePickerModal.tsx`, `src/components/map/MapContainer.tsx`, `src/components/map/MapHomeClient.tsx`, `src/components/contribute/ContributeForm.tsx`, `src/app/[locale]/layout.tsx`, `src/app/[locale]/places/[id]/page.tsx`, `src/app/[locale]/persons/[id]/page.tsx`, `src/app/[locale]/gatherings/page.tsx`, `src/app/[locale]/contribute/page.tsx`, `src/app/[locale]/me/page.tsx`, `src/app/[locale]/admin/page.tsx`, `src/components/navigation/BottomNav.tsx`, `PROJECT_STATE.md`.
   - *Next*: Live verification and user feedback.
