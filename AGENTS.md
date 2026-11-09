@@ -94,3 +94,13 @@ Every agent working on this repository must strictly maintain `PROJECT_STATE.md`
 4. **30-Entry Rollover Rule**: When the Changelog exceeds 30 entries, move the oldest batch of 10 into `docs/archive/changelog_archive_<N>.md` as a concise ~10-line summary, leaving a one-line pointer in `PROJECT_STATE.md`.
 5. **Session Bootstrap**: At the start of every new session or prompt, read `AGENTS.md` and `PROJECT_STATE.md` first.
 6. **`/summarize` Command**: When the user sends `/summarize`, produce a concise 10-line summary of the current project state, the last 5 changes, and the next 3 steps, and refresh `PROJECT_STATE.md`.
+
+---
+
+## 6. Lovable → GitHub → Vercel Deployment Workflow
+All changes, design enhancements, or feature iterations created in Lovable must follow this mandatory pipeline:
+1. **Sync to Next.js**: Extract all changes and components from the Lovable sandbox project (`fe2cf5d9-005b-4a8e-96a0-c02b4a4afc06`) via Lovable MCP tools and integrate them into the Next.js codebase.
+2. **Build Verification**: Run `npm run build` locally to ensure zero TypeScript, bundling, or styling errors.
+3. **Commit & Push to GitHub**: Commit every synced change to `master` and push to remote `origin` (`https://github.com/MuhammedAjmalBinAshraf/Sufi-Map.git`).
+4. **Automated Vercel Deployment**: GitHub auto-triggers Vercel CI/CD to build and deploy to production at `https://sufi-map.vercel.app`.
+5. **No Orphaned Sandbox Code**: Never leave edits solely inside Lovable. The GitHub repository is the sole source of truth for production.

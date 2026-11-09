@@ -55,6 +55,7 @@
 - **2026-11-08**: Explicit everyday naming for badges (*Musafir, Misbah, Hadiyya, Rafeeq, Nazir*) to ensure humble community stewardship without claiming or suggesting spiritual ranks.
 - **2026-11-08**: Multi-quote rotating banner with Amiri font and pause-on-hover to create a contemplative, sanctuary atmosphere without distracting motion.
 - **2026-11-08**: Progressive web manifest with theme color `#FAF9F4` and mobile standalone display for clear visibility under outdoor Kerala daylight.
+- **2026-11-09**: Lovable → GitHub → Vercel CI/CD workflow mandate: codified in AGENTS.md that all changes, design improvements, or feature experiments tested in Lovable must be systematically ported to Next.js, committed to Git, and pushed to GitHub so that Vercel automatically deploys them to production without leaving orphaned changes in Lovable.
 - **2026-11-09**: CartoDB Voyager default basemap: replaced plain OSM raster tiles with CartoDB Voyager tiles to guarantee CORS reliability across browsers and harmonize with the Sahn warm stone palette.
 - **2026-11-09**: Split-screen desktop architecture: docked 420px left sidebar for listings and search, giving the interactive map maximum canvas space while retaining mobile bottom sheet on small screens.
 - **2026-11-09**: Modal coordinate picker for contributors: enabled visual map coordinate selection with draggable marker to ensure accurate latitude/longitude entry without manual geo-lookup.
@@ -64,6 +65,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 23:48**: Codified mandatory Lovable → GitHub → Vercel deployment pipeline in `AGENTS.md` and `PROJECT_STATE.md`. All future experiments and direct chat changes in Lovable will be committed to `origin/master` so GitHub automates Vercel production deployments.
+  - *Files touched*: `AGENTS.md`, `PROJECT_STATE.md`.
+  - *Next*: Continue feature development adhering strictly to this pipeline.
 - **2026-11-09 23:43**: Integrated user direct chat edits from Lovable sandbox. Added 3-state draggable bottom sheet (`peek` 64px, `half` 42dvh, `full` 82dvh) with gesture flick physics (`sheet.ts`, `MobileSheet.tsx`); added quote banner auto-fade during map panning/zooming with 5s idle return timer; and applied mobile font scale 93.75% (<768px) with 16px input threshold. Pushed `12480ac` to GitHub and promoted to Vercel production.
   - *Files touched*: `src/lib/sheet.ts`, `src/components/sufi/MobileSheet.tsx`, `src/components/map/MapContainer.tsx`, `src/components/map/MapHomeClient.tsx`, `src/app/globals.css`, `PROJECT_STATE.md`.
   - *Next*: All Lovable chat edits live in production.
