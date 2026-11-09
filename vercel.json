@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/(en|ml|ar)",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/(en|ml|ar)/:path*",
+      "destination": "/:path*",
+      "permanent": false
+    }
+  ]
+}

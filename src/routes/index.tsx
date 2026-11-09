@@ -1,22 +1,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Award, MoonStar, PanelLeftClose, PanelLeftOpen, Plus, Settings } from "lucide-react";
+import { toast } from "sonner";
 
 import { BadgesSheet } from "@/components/sufi/BadgesSheet";
 import { LanguageToggle } from "@/components/sufi/LanguageToggle";
+import { MapControls } from "@/components/sufi/MapControls";
 import { MobileSheet } from "@/components/sufi/MobileSheet";
 import { QuoteBanner } from "@/components/sufi/QuoteBanner";
-import { SanctuaryMap } from "@/components/sufi/SanctuaryMap";
+import { SanctuaryMap, type SanctuaryMapHandle } from "@/components/sufi/SanctuaryMap";
 import { SettingsSheet } from "@/components/sufi/SettingsSheet";
 import { SiteDetail } from "@/components/sufi/SiteDetail";
 import { SiteFilters, SiteList } from "@/components/sufi/SiteList";
 import { SubmitDialog } from "@/components/sufi/SubmitDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { calculateDistanceKm, type BasemapStyleId } from "@/lib/maplibre";
 import { shouldShowQuote, usePreferences } from "@/lib/preferences";
 import type { SheetSnap } from "@/lib/sheet";
 import { cn } from "@/lib/utils";
-import { filterSites, SITES, type SiteKind } from "@/lib/sites";
+import { filterSites, SITES, type Site, type SiteKind } from "@/lib/sites";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,7 +42,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t, lang } = useI18n();
+  const { t, lang, pick } = useI18n();
+  const mapRef = useRef<SanctuaryMapHandle>(null);
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<SiteKind | "all">("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -48,7 +52,51 @@ function Index() {
   const [sheetSnap, setSheetSnap] = useState<SheetSnap>("half");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [basemapStyle, setBasemapStyle] = useState<BasemapStyleId>("sahn-warm");
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [nearestSite, setNearestSite] = useState<{ name: string; distanceKm: number } | null>(null);
   const { prefs } = usePreferences();
+
+  const handleLocateMe = () => {
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      toast.error(t("locationDenied"));
+      return;
+    }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setIsLocating(false);
+        const coords: [number, number] = [pos.coords.longitude, pos.coords.latitude];
+        setUserLocation(coords);
+        mapRef.current?.flyTo(coords, 13);
+
+        // Find nearest sanctuary
+        let minDistance = Infinity;
+        let closest: Site | null = null;
+        for (const s of SITES) {
+          const dist = calculateDistanceKm(pos.coords.latitude, pos.coords.longitude, s.lat, s.lng);
+          if (dist < minDistance) {
+            minDistance = dist;
+            closest = s;
+          }
+        }
+        if (closest) {
+          setNearestSite({
+            name: pick(closest.name),
+            distanceKm: minDistance,
+          });
+          toast.success(t("nearestDistance", { name: pick(closest.name), dist: minDistance.toFixed(1) }));
+        }
+      },
+      (err) => {
+        setIsLocating(false);
+        console.warn("Geolocation denied or error:", err.message);
+        toast.error(t("locationDenied"));
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  };
 
   // The quote steps aside while the visitor moves the map, and returns after a quiet pause.
   const [exploring, setExploring] = useState(false);
@@ -133,7 +181,28 @@ function Index() {
 
       {/* Map */}
       <main className="relative min-w-0 flex-1">
-        <SanctuaryMap sites={sites} selectedId={selectedId} onSelect={select} onExploreChange={onExploreChange} />
+        <SanctuaryMap
+          ref={mapRef}
+          sites={sites}
+          selectedId={selectedId}
+          onSelect={select}
+          onExploreChange={onExploreChange}
+          styleId={basemapStyle}
+          userLocation={userLocation}
+        />
+
+        {/* Map Layers & Geolocation Controls */}
+        <MapControls
+          currentStyle={basemapStyle}
+          onStyleChange={setBasemapStyle}
+          onLocateMe={handleLocateMe}
+          isLocating={isLocating}
+          onZoomIn={() => mapRef.current?.zoomIn()}
+          onZoomOut={() => mapRef.current?.zoomOut()}
+          onResetBearing={() => mapRef.current?.resetBearing()}
+          onSelectRegion={(coords, zoom) => mapRef.current?.flyTo(coords, zoom)}
+          nearestSite={nearestSite}
+        />
 
         {/* Mobile: floating header */}
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 space-y-2 p-3 md:hidden">

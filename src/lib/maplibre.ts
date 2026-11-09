@@ -4,8 +4,86 @@ import type { SiteKind } from "./sites";
 
 export type MapLibreModule = typeof MapLibre;
 
+export type BasemapStyleId = "sahn-warm" | "osm-standard" | "satellite" | "terrain";
+
 export const BASEMAP_STYLE =
   "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json?key=cb1_551n_1_dee07681fafb4f6811bd2bbc";
+
+export const BASEMAP_STYLES: Record<BasemapStyleId, string | object> = {
+  "sahn-warm": BASEMAP_STYLE,
+  "osm-standard": {
+    version: 8,
+    sources: {
+      "osm-tiles": {
+        type: "raster",
+        tiles: [
+          "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        ],
+        tileSize: 256,
+        attribution: "&copy; OpenStreetMap contributors",
+      },
+    },
+    layers: [{ id: "osm-layer", type: "raster", source: "osm-tiles", minzoom: 0, maxzoom: 19 }],
+  },
+  satellite: {
+    version: 8,
+    sources: {
+      "satellite-tiles": {
+        type: "raster",
+        tiles: [
+          "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        ],
+        tileSize: 256,
+        attribution: "&copy; Esri World Imagery",
+      },
+    },
+    layers: [{ id: "satellite-layer", type: "raster", source: "satellite-tiles", minzoom: 0, maxzoom: 19 }],
+  },
+  terrain: {
+    version: 8,
+    sources: {
+      "topo-tiles": {
+        type: "raster",
+        tiles: [
+          "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
+          "https://b.tile.opentopomap.org/{z}/{x}/{y}.png",
+          "https://c.tile.opentopomap.org/{z}/{x}/{y}.png",
+        ],
+        tileSize: 256,
+        attribution: "Map style: &copy; OpenTopoMap (CC-BY-SA)",
+      },
+    },
+    layers: [{ id: "topo-layer", type: "raster", source: "topo-tiles", minzoom: 0, maxzoom: 17 }],
+  },
+};
+
+/** Calculate Haversine distance in km between two GPS coordinates */
+export function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+/** Pulsing emerald/blue location marker for the visitor. */
+export function createUserLocationElement() {
+  const root = document.createElement("div");
+  root.className = "relative flex size-6 items-center justify-center";
+  root.innerHTML = `
+    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/40 opacity-75"></span>
+    <span class="relative inline-flex size-3.5 rounded-full border-2 border-card bg-primary shadow-md"></span>
+  `;
+  return root;
+}
 
 /** Above this, the basemap has no tiles and requests fail. */
 export const MAX_ZOOM = 19;
