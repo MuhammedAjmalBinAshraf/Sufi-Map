@@ -84,7 +84,6 @@ export function pinIcon(kind: SiteKind, selected: boolean): google.maps.Icon {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="52" height="58" viewBox="0 0 52 58">
   <defs><filter id="s" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="${SAHN.ink}" flood-opacity="0.18"/></filter></defs>
   <g filter="url(#s)">
-    <path d="M20 6h0a14 14 0 0 0-14 14v12a14 14 0 0 0 14 14h2l4 6 4-6h0" fill="none"/>
     <rect x="4" y="8" width="40" height="40" rx="14" fill="${fill}" stroke="${SAHN.surface}" stroke-width="2"/>
     <path d="M20 48 L24 54 L28 48 Z" fill="${fill}"/>
     <path d="M24 17c-4.5 2.6-7 6-7 9.5V37h14V26.5c0-3.5-2.5-6.9-7-9.5z M22.5 37v-4.5a1.5 1.5 0 0 1 3 0V37" fill="none" stroke="${SAHN.surface}" stroke-width="1.8" stroke-linejoin="round"/>
