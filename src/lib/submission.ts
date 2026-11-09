@@ -15,7 +15,10 @@ export const placeSchema = z.object({
 });
 
 export const locationSchema = z
-  .object({ lat: z.number({ invalid_type_error: "err.coords" }), lng: z.number({ invalid_type_error: "err.coords" }) })
+  .object({
+    lat: z.number({ required_error: "err.coords", invalid_type_error: "err.coords" }),
+    lng: z.number({ required_error: "err.coords", invalid_type_error: "err.coords" }),
+  })
   .refine((v) => isInKerala(v.lat, v.lng), { message: "err.kerala", path: ["lat"] });
 
 export const sourceSchema = z
