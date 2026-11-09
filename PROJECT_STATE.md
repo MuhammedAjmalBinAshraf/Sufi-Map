@@ -1,10 +1,10 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Lovable MapLibre swap completed (commit e72418a8) — Google Maps fully removed from Lovable project.
-- Porting Lovable design improvements to production Next.js codebase in progress.
-- Build verification running.
-- Production at https://sufi-map.vercel.app (auto-deploys on push to master).
+- Design system refinements committed (`7603a48`) and pushed — Vercel auto-deploying now.
+- Lovable MapLibre swap confirmed complete (commit `e72418a8` on Lovable project).
+- Production at https://sufi-map.vercel.app — auto-deploys on push to master.
+- All 9 routes build cleanly; no TypeScript errors.
 
 ## Done
 - Initialized Git repository and set safe directory rules.
@@ -39,11 +39,12 @@
 - Connected Vercel production deployment to GitHub repository for automated continuous deployment (CI/CD).
 
 ## In Progress
-- Verification of live database records across the production app.
+- Vercel redeployment triggered by commit `7603a48`.
 
 ## Next Up
+- Verify redesigned pins, card-lift, quote crossfade on live https://sufi-map.vercel.app.
 - Configure Supabase Auth redirect URLs in Supabase Dashboard (add `https://sufi-map.vercel.app/**`).
-- Collect feedback on live Vercel deployment.
+- Continue Lovable iteration: mobile bottom sheet polish, smooth page transitions, RTL pin badge direction.
 
 ## Decisions
 - **2026-11-08**: Standardized on Next.js 14 App Router with `next-intl` localized route grouping `[locale]` for English, Malayalam, and Arabic with RTL layout support.
@@ -63,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-09 22:56**: Ported Sahn design system refinements from Lovable to Next.js production codebase. Upgraded map pins to 40px rounded-[14px] buttons with M/Z/D/G category letter badges, hover-lift, and selected dark-ink state. Added `card-lift`, `courtyard-pattern`, `font-arabic-script`, `shadow-float/lift`, `quote-dot` pill animations, and `page-enter` fade-in to globals.css. Rewrote `RotatingQuote` with crossfade grid, hover-pause indicator, and expandable dot indicators. Updated PlaceBottomSheet to use `shadow-float` and OSM directions. Added `fade-in`/`quote-crossfade` keyframes to tailwind.config.ts. Committed `7603a48` and pushed — Vercel auto-deploying.
+  - *Files touched*: `src/app/globals.css`, `tailwind.config.ts`, `src/components/map/MapContainer.tsx`, `src/components/contribute/RotatingQuote.tsx`, `src/components/map/MapHomeClient.tsx`, `src/components/sheet/PlaceBottomSheet.tsx`, `PROJECT_STATE.md`.
+  - *Next*: Verify live at https://sufi-map.vercel.app. Add Supabase Auth redirect URL.
 - **2026-11-09 22:15**: Initialized Lovable project (`fe2cf5d9-005b-4a8e-96a0-c02b4a4afc06`) via Lovable MCP. Configured persistent "Sahn" design system knowledge (palette tokens, 14px radius, Playfair Display/Inter/Amiri typography, micro-interactions, mobile bottom sheet & desktop 420px dock). Enforced token minimization and clean shadcn/ui modular component structure.
   - *Files touched*: `PROJECT_STATE.md`.
   - *Next*: Inspect generated Lovable components and integrate refinements into production codebase.
