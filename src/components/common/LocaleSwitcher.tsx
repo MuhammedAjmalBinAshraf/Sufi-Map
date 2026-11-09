@@ -3,7 +3,6 @@
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { useTransition } from "react";
-import { Globe } from "lucide-react";
 
 export function LocaleSwitcher() {
   const locale = useLocale();
@@ -12,49 +11,44 @@ export function LocaleSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   const handleLocaleChange = (newLocale: "en" | "ml" | "ar") => {
+    if (newLocale === locale) return;
     startTransition(() => {
       router.replace(pathname, { locale: newLocale });
     });
   };
 
+  const langs = [
+    { id: "en", label: "EN" },
+    { id: "ml", label: "മല" },
+    { id: "ar", label: "عر" },
+  ] as const;
+
   return (
-    <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground bg-white/80 backdrop-blur-sm border border-border/80 rounded-full px-2 py-1 shadow-sm">
-      <Globe className="w-3.5 h-3.5 text-primary" />
-      <button
-        onClick={() => handleLocaleChange("en")}
-        disabled={isPending}
-        className={`px-1.5 py-0.5 rounded-full transition-colors ${
-          locale === "en"
-            ? "bg-primary text-primary-foreground font-semibold"
-            : "hover:text-foreground"
-        }`}
-      >
-        EN
-      </button>
-      <span className="text-border">|</span>
-      <button
-        onClick={() => handleLocaleChange("ml")}
-        disabled={isPending}
-        className={`px-1.5 py-0.5 rounded-full transition-colors ${
-          locale === "ml"
-            ? "bg-primary text-primary-foreground font-semibold"
-            : "hover:text-foreground"
-        }`}
-      >
-        മല
-      </button>
-      <span className="text-border">|</span>
-      <button
-        onClick={() => handleLocaleChange("ar")}
-        disabled={isPending}
-        className={`px-1.5 py-0.5 rounded-full transition-colors ${
-          locale === "ar"
-            ? "bg-primary text-primary-foreground font-semibold"
-            : "hover:text-foreground"
-        }`}
-      >
-        عر
-      </button>
+    <div
+      role="radiogroup"
+      aria-label="Language"
+      className="inline-flex items-center rounded-[12px] border border-border bg-accent p-0.5 shadow-xs"
+    >
+      {langs.map((l) => {
+        const isActive = locale === l.id;
+        return (
+          <button
+            key={l.id}
+            type="button"
+            role="radio"
+            aria-checked={isActive}
+            onClick={() => handleLocaleChange(l.id)}
+            disabled={isPending}
+            className={`h-7 min-w-8 px-2 text-xs font-medium transition-all duration-200 rounded-[10px] ${
+              isActive
+                ? "bg-white text-primary shadow-xs font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {l.label}
+          </button>
+        );
+      })}
     </div>
   );
 }

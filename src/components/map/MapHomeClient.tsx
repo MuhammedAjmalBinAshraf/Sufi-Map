@@ -1,39 +1,39 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Database } from "@/types/database";
-import { DesktopHeader } from "@/components/navigation/DesktopHeader";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
 import { PlaceBottomSheet } from "@/components/sheet/PlaceBottomSheet";
 import { MapControls, BasemapStyle } from "@/components/map/MapControls";
 import { MapContainerHandle } from "@/components/map/MapContainer";
+import { SiteDetail } from "@/components/sufi/SiteDetail";
+import { BadgesSheet } from "@/components/sufi/BadgesSheet";
+import { RotatingQuote } from "@/components/contribute/RotatingQuote";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Search,
   Plus,
   Compass,
-  MapPin,
-  Sparkles,
-  Navigation,
-  Bookmark,
-  Edit3,
-  ExternalLink,
+  MoonStar,
+  Award,
+  PanelLeftClose,
+  PanelLeftOpen,
   ChevronRight,
-  Layers,
+  Navigation,
 } from "lucide-react";
 
 type Place = Database["public"]["Tables"]["places"]["Row"];
+type Quote = Database["public"]["Tables"]["quotes"]["Row"];
 
 const MapContainer = dynamic(() => import("@/components/map/MapContainer"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full min-h-[420px] bg-[#EEF0E6] flex flex-col items-center justify-center gap-2">
+    <div className="courtyard-pattern w-full h-full min-h-[420px] flex flex-col items-center justify-center gap-2">
       <Compass className="w-8 h-8 text-primary animate-spin" />
       <span className="text-xs text-muted-foreground font-serif">
         Opening Sanctuary Map...
@@ -58,18 +58,19 @@ function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
 
 interface MapHomeClientProps {
   initialPlaces: Place[];
+  quotes?: Quote[];
 }
 
-export function MapHomeClient({ initialPlaces }: MapHomeClientProps) {
+export function MapHomeClient({ initialPlaces, quotes = [] }: MapHomeClientProps) {
   const t = useTranslations();
   const locale = useLocale();
   const mapRef = useRef<MapContainerHandle>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedKind, setSelectedKind] = useState<string>("all");
-  const [selectedPlace, setSelectedPlace] = useState<Place | null>(
-    initialPlaces.length > 0 ? initialPlaces[0] : null
-  );
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [badgesOpen, setBadgesOpen] = useState(false);
 
   // Map Setup States
   const [basemapStyle, setBasemapStyle] = useState<BasemapStyle>("sahn-warm");
@@ -115,7 +116,6 @@ export function MapHomeClient({ initialPlaces }: MapHomeClientProps) {
         setUserLocation(coords);
         mapRef.current?.setUserLocation(coords);
 
-        // Find nearest sanctuary
         if (initialPlaces.length > 0) {
           let closest = initialPlaces[0];
           let minDistance = calculateDistanceKm(
@@ -153,233 +153,309 @@ export function MapHomeClient({ initialPlaces }: MapHomeClientProps) {
   };
 
   return (
-    <div className="relative flex flex-col min-h-screen w-full bg-sahn-bg overflow-hidden">
-      {/* 1. Desktop Full-Width Header (Shown on >= md) */}
-      <DesktopHeader />
-
-      {/* 2. Mobile Floating App Bar (Shown on < md) */}
-      <header className="md:hidden sticky top-0 z-40 px-4 pt-3 pb-2 bg-sahn-bg/95 backdrop-blur-md border-b border-border/60">
-        <div className="flex flex-col gap-2.5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                <Compass className="w-4 h-4 text-primary animate-[spin_60s_linear_infinite]" />
+    <div className="relative flex h-dvh w-full overflow-hidden bg-background">
+      {/* ─── 1. Desktop Sanctuary Sidebar (Collapsible) ─── */}
+      <aside
+        inert={!sidebarOpen}
+        className={`hidden shrink-0 overflow-hidden bg-background transition-[width] duration-300 ease-out md:flex ${
+          sidebarOpen ? "w-[420px] border-e border-border" : "w-0 border-none"
+        }`}
+      >
+        <div className="flex w-[420px] shrink-0 flex-col h-full">
+          {/* Header */}
+          <header className="space-y-3.5 border-b border-border/80 p-5 pb-4 bg-card/60 backdrop-blur-sm">
+            <div className="flex items-center justify-between gap-2">
+              {/* Brand Logo & Name */}
+              <div className="flex items-center gap-2.5">
+                <span
+                  className="flex size-9 items-center justify-center rounded-[14px] bg-primary text-primary-foreground shadow-xs"
+                  aria-hidden
+                >
+                  <MoonStar className="size-4" />
+                </span>
+                <div>
+                  <h1 className="font-serif text-xl font-semibold tracking-tight text-foreground leading-none">
+                    {t("common.title")}
+                  </h1>
+                </div>
               </div>
-              <div>
-                <h1 className="font-serif text-lg font-semibold tracking-tight text-foreground leading-none">
-                  {t("common.title")}
-                </h1>
-                <p className="text-[11px] text-muted-foreground mt-0.5 truncate max-w-[210px]">
-                  {t("common.tagline")}
-                </p>
+
+              {/* Language Switcher + Sidebar Collapse Button */}
+              <div className="flex items-center gap-1.5">
+                <LocaleSwitcher />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSidebarOpen(false)}
+                  aria-label="Collapse menu"
+                  title="Collapse menu"
+                  className="size-8 rounded-[10px] text-muted-foreground hover:text-foreground hover:bg-accent"
+                >
+                  <PanelLeftClose className="size-4 rtl:-scale-x-100" aria-hidden />
+                </Button>
               </div>
             </div>
-            <LocaleSwitcher />
-          </div>
 
-          <div className="relative">
-            <Search className="absolute left-3.5 rtl:left-auto rtl:right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t("common.searchPlaceholder")}
-              className="w-full h-11 pl-10 pr-4 rtl:pl-4 rtl:pr-10 bg-white border-border rounded-[14px] text-sm placeholder:text-muted-foreground/80 shadow-xs"
-            />
-          </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {t("common.tagline")}
+            </p>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-            {filterChips.map((chip) => {
-              const isActive = selectedKind === chip.id;
-              return (
-                <Badge
-                  key={chip.id}
-                  onClick={() => setSelectedKind(chip.id)}
-                  variant={isActive ? "default" : "outline"}
-                  className={`cursor-pointer whitespace-nowrap px-3.5 py-1.5 text-xs font-medium rounded-full transition-colors ${
-                    isActive
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs"
-                      : "bg-white text-muted-foreground border-border hover:text-foreground"
-                  }`}
+            {/* Quick Actions Bar */}
+            <div className="flex items-center gap-2 pt-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setBadgesOpen(true)}
+                className="h-8 rounded-[12px] text-xs font-medium border-border hover:bg-accent flex items-center gap-1.5 px-3"
+              >
+                <Award className="size-3.5 text-primary" aria-hidden />
+                <span>Badges</span>
+              </Button>
+
+              <Link href="/contribute" className="flex-1">
+                <Button
+                  size="sm"
+                  className="w-full h-8 rounded-[12px] bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-medium flex items-center justify-center gap-1.5 shadow-xs"
                 >
-                  {chip.label}
-                </Badge>
-              );
-            })}
+                  <Plus className="size-3.5 stroke-[2.5]" aria-hidden />
+                  <span>{t("home.contributeCTA")}</span>
+                </Button>
+              </Link>
+            </div>
+          </header>
+
+          {/* Filter Bar (Only shown when not viewing a single place detail) */}
+          {!selectedPlace && (
+            <div className="border-b border-border/80 p-4 pb-3 space-y-2.5 bg-accent/20">
+              <div className="relative">
+                <Search className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" aria-hidden />
+                <Input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t("common.searchPlaceholder")}
+                  className="h-10 bg-card ps-9 text-xs rounded-[12px] border-border shadow-2xs focus-visible:ring-primary"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                {filterChips.map((chip) => {
+                  const isActive = selectedKind === chip.id;
+                  return (
+                    <Badge
+                      key={chip.id}
+                      onClick={() => setSelectedKind(chip.id)}
+                      variant={isActive ? "default" : "outline"}
+                      className={`cursor-pointer whitespace-nowrap px-3 py-1 text-[11px] font-medium rounded-full transition-all duration-200 ${
+                        isActive
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xs"
+                          : "bg-card text-muted-foreground border-border hover:text-foreground"
+                      }`}
+                    >
+                      {chip.label}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Sidebar Body Content: Either Place List OR SiteDetail */}
+          <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            {selectedPlace ? (
+              <SiteDetail
+                place={selectedPlace}
+                onBack={() => setSelectedPlace(null)}
+                locale={locale}
+              />
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
+                  <span>Sanctuaries ({filteredPlaces.length})</span>
+                  {nearestInfo && (
+                    <span className="text-[11px] font-mono text-primary truncate max-w-[170px]">
+                      Nearest: {nearestInfo.name} ({nearestInfo.distanceKm.toFixed(1)} km)
+                    </span>
+                  )}
+                </div>
+
+                {filteredPlaces.length === 0 ? (
+                  <p className="px-1 py-12 text-center text-xs text-muted-foreground">
+                    No sanctuaries found matching your criteria.
+                  </p>
+                ) : (
+                  <ul className="space-y-2.5">
+                    {filteredPlaces.map((place) => {
+                      const primaryName =
+                        locale === "ml"
+                          ? place.name_ml
+                          : locale === "ar"
+                          ? place.name_ar
+                          : place.name_en;
+
+                      return (
+                        <li key={place.id}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPlace(place)}
+                            className="card-lift w-full text-start p-3.5 rounded-[14px] border border-border bg-card cursor-pointer transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <div className="flex items-center gap-1.5 mb-1">
+                                  <Badge
+                                    variant="parchment"
+                                    className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0 h-4 rounded-full"
+                                  >
+                                    {place.kind}
+                                  </Badge>
+                                  <span className="text-[11px] text-muted-foreground">
+                                    {place.area}
+                                  </span>
+                                </div>
+                                <h3 className="font-serif text-base font-semibold text-foreground leading-snug">
+                                  {primaryName}
+                                </h3>
+                                {locale !== "en" && (
+                                  <span className="text-xs text-muted-foreground block font-sans">
+                                    {place.name_en}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="p-1 text-muted-foreground hover:text-primary">
+                                <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+                              </div>
+                            </div>
+
+                            <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
+                              {place.short_history_en}
+                            </p>
+
+                            <div className="mt-2.5 pt-2 border-t border-border/50 flex items-center justify-between text-[11px]">
+                              <span className="text-muted-foreground font-mono">
+                                {place.latitude.toFixed(4)}° N, {place.longitude.toFixed(4)}° E
+                              </span>
+
+                              <span className="font-medium text-primary flex items-center gap-1">
+                                <Navigation className="w-3 h-3 fill-current" />
+                                <span>View</span>
+                              </span>
+                            </div>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         </div>
-      </header>
+      </aside>
 
-      {/* 3. Main Body: Responsive Split Screen Layout */}
-      <div className="flex-1 flex flex-col md:flex-row w-full h-[calc(100vh-64px)] relative overflow-hidden">
-        {/* Left Desktop Sanctuary Sidebar (Visible on md and above) */}
-        <aside aria-label="Sanctuary Sidebar" className="hidden md:flex flex-col w-[420px] h-full border-r border-border bg-white shadow-xs z-20 overflow-hidden shrink-0">
-          {/* Sidebar Top Search & Chips */}
-          <div className="p-4 border-b border-border/70 flex flex-col gap-3 bg-sahn-bg/40">
-            <div className="relative">
-              <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search sanctuaries, maqams..."
-                className="h-10 pl-9 pr-3 rtl:pl-3 rtl:pr-9 bg-white border-border rounded-[12px] text-xs shadow-xs focus-visible:ring-primary"
-              />
-            </div>
+      {/* ─── 2. Main Map Viewport ─── */}
+      <main className="relative min-w-0 flex-1 h-full">
+        <MapContainer
+          ref={mapRef}
+          places={filteredPlaces}
+          selectedPlace={selectedPlace}
+          onSelectPlace={(place) => setSelectedPlace(place)}
+          basemapStyle={basemapStyle}
+        />
 
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-              {filterChips.map((chip) => {
-                const isActive = selectedKind === chip.id;
-                return (
-                  <Badge
-                    key={chip.id}
-                    onClick={() => setSelectedKind(chip.id)}
-                    variant={isActive ? "default" : "outline"}
-                    className={`cursor-pointer whitespace-nowrap px-3 py-1 text-[11px] font-medium rounded-full transition-colors ${
-                      isActive
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : "bg-white text-muted-foreground border-border hover:text-foreground"
-                    }`}
-                  >
-                    {chip.label}
-                  </Badge>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Sidebar Places List */}
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
-            <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-              <span>Sanctuaries in West Malappuram</span>
-              <span className="font-mono text-[11px]">
-                {filteredPlaces.length} entries
-              </span>
-            </div>
-
-            {filteredPlaces.map((place) => {
-              const isSelected = selectedPlace?.id === place.id;
-              const primaryName =
-                locale === "ml"
-                  ? place.name_ml
-                  : locale === "ar"
-                  ? place.name_ar
-                  : place.name_en;
-
-              return (
-                <div
-                  key={place.id}
-                  onClick={() => setSelectedPlace(place)}
-                  className={`card-lift w-full text-start p-3.5 rounded-[14px] border cursor-pointer transition-colors ${
-                    isSelected
-                      ? "bg-primary/5 border-primary shadow-sm"
-                      : "bg-white border-border hover:border-primary/30"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge
-                          variant="secondary"
-                          className="bg-primary/10 text-primary border-transparent text-[10px] font-semibold uppercase tracking-wider px-2 py-0 h-4 rounded-full"
-                        >
-                          {place.kind}
-                        </Badge>
-                        <span className="text-[11px] text-muted-foreground">
-                          {place.area}
-                        </span>
-                      </div>
-                      <h3 className="font-serif text-base font-semibold text-foreground leading-snug">
-                        {primaryName}
-                      </h3>
-                      {locale !== "en" && (
-                        <span className="text-xs text-muted-foreground block font-sans">
-                          {place.name_en}
-                        </span>
-                      )}
-                    </div>
-
-                    <Link
-                      href={`/places/${place.id}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="p-1 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10"
-                    >
-                      <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-                    </Link>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
-                    {place.short_history_en}
-                  </p>
-
-                  <div className="mt-2.5 pt-2 border-t border-border/50 flex items-center justify-between text-[11px]">
-                    <span className="text-muted-foreground font-mono">
-                      {place.latitude.toFixed(4)}° N, {place.longitude.toFixed(4)}° E
-                    </span>
-
-                    <a
-                      href={`https://www.openstreetmap.org/directions?route=;${place.latitude},${place.longitude}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="font-medium text-primary flex items-center gap-1 hover:underline"
-                    >
-                      <Navigation className="w-3 h-3 fill-current" />
-                      <span>Directions</span>
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </aside>
-
-        {/* Right Map Canvas (Spans full viewport height and width) */}
-        <main className="flex-1 w-full h-full relative min-h-[420px]">
-          <MapContainer
-            ref={mapRef}
-            places={filteredPlaces}
-            selectedPlace={selectedPlace}
-            onSelectPlace={(place) => setSelectedPlace(place)}
-            basemapStyle={basemapStyle}
-          />
-
-          {/* Floating In-App Map Controls (Basemaps, Locate Me, Region hubs) */}
-          <MapControls
-            currentStyle={basemapStyle}
-            onStyleChange={setBasemapStyle}
-            onLocateUser={handleLocateUser}
-            onZoomIn={() => mapRef.current?.zoomIn()}
-            onZoomOut={() => mapRef.current?.zoomOut()}
-            onResetBearing={() => mapRef.current?.resetBearing()}
-            onSelectRegion={(coords, zoom) => mapRef.current?.flyTo(coords, zoom)}
-            nearestPlaceName={nearestInfo?.name}
-            nearestDistanceKm={nearestInfo?.distanceKm}
-          />
-
-          {/* Mobile Floating Action Button (+) */}
-          <Link
-            href="/contribute"
-            className="md:hidden absolute bottom-20 right-4 z-30"
-            aria-label={t("home.contributeCTA")}
+        {/* Desktop Expand Sidebar Floating Button (shown when sidebar is closed) */}
+        {!sidebarOpen && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Expand menu"
+            title="Expand menu"
+            className="absolute start-5 top-5 z-20 hidden md:inline-flex bg-card shadow-float rounded-[12px] border-border hover:bg-accent"
           >
-            <Button
-              size="icon"
-              className="w-13 h-13 rounded-full bg-primary text-primary-foreground shadow-[0_4px_16px_rgba(31,92,58,0.35)] hover:bg-primary/95 active:scale-95 transition-all"
-            >
-              <Plus className="w-6 h-6 stroke-[2.25]" />
-            </Button>
-          </Link>
-        </main>
-      </div>
+            <PanelLeftOpen className="size-4 rtl:-scale-x-100 text-foreground" aria-hidden />
+          </Button>
+        )}
 
-      {/* 4. Mobile Bottom Sheet (Shown only on small screens) */}
+        {/* Desktop: Floating Quote Banner on Top of the Map */}
+        {quotes.length > 0 && (
+          <div className="pointer-events-none absolute inset-x-0 top-5 z-20 hidden justify-center px-4 md:flex">
+            <div className="pointer-events-auto w-full max-w-xl">
+              <RotatingQuote quotes={quotes} className="shadow-float" />
+            </div>
+          </div>
+        )}
+
+        {/* Floating In-App Map Controls (Basemaps, Locate Me, Region hubs) */}
+        <MapControls
+          currentStyle={basemapStyle}
+          onStyleChange={setBasemapStyle}
+          onLocateUser={handleLocateUser}
+          onZoomIn={() => mapRef.current?.zoomIn()}
+          onZoomOut={() => mapRef.current?.zoomOut()}
+          onResetBearing={() => mapRef.current?.resetBearing()}
+          onSelectRegion={(coords, zoom) => mapRef.current?.flyTo(coords, zoom)}
+          nearestPlaceName={nearestInfo?.name}
+          nearestDistanceKm={nearestInfo?.distanceKm}
+        />
+
+        {/* Mobile: Floating App Bar & Quote Banner */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-30 space-y-2 p-3 md:hidden">
+          <div className="pointer-events-auto flex items-center justify-between gap-2 rounded-[14px] border border-border bg-card/95 p-2.5 ps-3 shadow-float backdrop-blur-md">
+            <div className="flex items-center gap-2">
+              <span
+                className="flex size-8 items-center justify-center rounded-[12px] bg-primary text-primary-foreground shadow-xs"
+                aria-hidden
+              >
+                <MoonStar className="size-3.5" />
+              </span>
+              <h1 className="font-serif text-base font-semibold text-foreground">
+                {t("common.title")}
+              </h1>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <LocaleSwitcher />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setBadgesOpen(true)}
+                aria-label="Badges"
+                className="size-8 rounded-[10px] border-border"
+              >
+                <Award className="size-3.5 text-primary" aria-hidden />
+              </Button>
+              <Link href="/contribute">
+                <Button size="icon" aria-label="Contribute" className="size-8 rounded-[10px] bg-primary text-primary-foreground">
+                  <Plus className="size-3.5 stroke-[2.5]" aria-hidden />
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {quotes.length > 0 && (
+            <div className="pointer-events-auto">
+              <RotatingQuote quotes={quotes} className="shadow-float text-xs" />
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* ─── 3. Mobile Bottom Sheet ─── */}
       <div className="md:hidden">
         <PlaceBottomSheet
           place={selectedPlace}
           onClose={() => setSelectedPlace(null)}
         />
       </div>
+
+      {/* ─── 4. Badges Slide-Out Sheet ─── */}
+      <BadgesSheet
+        open={badgesOpen}
+        onOpenChange={setBadgesOpen}
+        dir={locale === "ar" ? "rtl" : "ltr"}
+      />
     </div>
   );
 }
