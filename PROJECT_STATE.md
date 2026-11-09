@@ -1,10 +1,10 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Design system refinements committed (`7603a48`) and pushed — Vercel auto-deploying now.
-- Lovable MapLibre swap confirmed complete (commit `e72418a8` on Lovable project).
-- Production at https://sufi-map.vercel.app — auto-deploys on push to master.
-- All 9 routes build cleanly; no TypeScript errors.
+- Design system refinements live at https://sufi-map.vercel.app (commit `7603a48`).
+- Cursor MCP configured globally at `~/.cursor/mcp.json` and project-level at `.cursor/mcp.json` (gitignored).
+- Cursor rules file at `.cursor/rules` with Sahn design system context.
+- Supabase Auth redirect URL confirmed added by user.
 
 ## Done
 - Initialized Git repository and set safe directory rules.
