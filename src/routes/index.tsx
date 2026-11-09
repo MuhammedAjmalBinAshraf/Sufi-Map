@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Award, Plus } from "lucide-react";
+import { Award, MoonStar, Plus } from "lucide-react";
 
 import { BadgesSheet } from "@/components/sufi/BadgesSheet";
 import { LanguageToggle } from "@/components/sufi/LanguageToggle";
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t, dir } = useI18n();
+  const { t } = useI18n();
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<SiteKind | "all">("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -73,7 +73,7 @@ function Index() {
   );
 
   return (
-    <div dir={dir} className="flex h-dvh w-full overflow-hidden bg-background">
+    <div className="flex h-dvh w-full overflow-hidden bg-background">
       {/* Desktop: docked sanctuary sidebar */}
       <aside className="hidden w-[420px] shrink-0 flex-col border-e bg-background md:flex">
         <header className="space-y-4 border-b p-6 pb-5">
@@ -81,9 +81,7 @@ function Index() {
             <Brand />
             <LanguageToggle />
           </div>
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-sm text-muted-foreground">{t("tagline")}</p>
-          </div>
+          <p className="text-sm text-muted-foreground">{t("tagline")}</p>
           {actions}
         </header>
         {filters && <div className="border-b p-6 py-4">{filters}</div>}
@@ -133,10 +131,10 @@ function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <div className="flex items-center gap-2.5">
       <span
-        className="flex size-9 items-center justify-center rounded-[14px] bg-primary font-arabic-script text-base text-primary-foreground"
+        className="flex size-9 items-center justify-center rounded-[14px] bg-primary text-primary-foreground"
         aria-hidden
       >
-        صوف
+        <MoonStar className="size-4" />
       </span>
       <h1 className={compact ? "text-lg" : "text-2xl"}>{t("appName")}</h1>
     </div>
