@@ -31,8 +31,7 @@ use the editor.
 
 ## Project rules
 
-- Maps load only through the shared loader in `src/lib/google-maps.ts` (one async script, Sahn map styles, SVG pin icons); every map view must render a calm fallback when the browser key is missing or loading fails, so the list stays usable.
+- Maps use MapLibre GL, loaded only in the browser through `src/lib/maplibre.ts` (dynamic import + bundled worker URL, shared basemap style, max zoom, ResizeObserver, HTML pin elements styled with Sahn tokens); never Google Maps. Every map view renders a calm fallback if loading fails, so the list stays usable.
 - All interface text lives in the `en`/`ml`/`ar` dictionaries in `src/lib/i18n.tsx`, and site data carries all three languages; use logical spacing/position utilities (`ps`, `pe`, `start`, `end`, `ms`, `me`) so Arabic RTL mirrors without extra code.
 - Form validation lives in `src/lib/submission.ts` as zod schemas whose messages are i18n keys, so rules stay testable and translated in one place.
 - Steward progress (visits, kept sites, submissions, corrections) is stored on the visitor's device via `src/lib/steward.tsx` until a backend exists; badge thresholds live only in `src/lib/badges.ts`.
-- Colors used inside Google map imagery are mirrored as hex in `src/lib/google-maps.ts` because Google renders outside our stylesheet; keep them in sync with `src/styles.css` tokens.

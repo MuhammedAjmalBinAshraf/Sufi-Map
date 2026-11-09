@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
+import type { Map as MapLibreMap, Marker } from "maplibre-gl";
 import { MapPinOff } from "lucide-react";
 
-import { useGoogleMaps } from "@/hooks/use-google-maps";
-import { pinIcon, SAHN_MAP_STYLES } from "@/lib/google-maps";
+import { useMapLibre } from "@/hooks/use-maplibre";
 import { useI18n } from "@/lib/i18n";
+import { BASEMAP_STYLE, createPinElement, MAX_ZOOM, observeResize, overlayPadding } from "@/lib/maplibre";
 import { KERALA_CENTER, type Site } from "@/lib/sites";
 
 interface SanctuaryMapProps {
@@ -13,80 +14,79 @@ interface SanctuaryMapProps {
 }
 
 export function SanctuaryMap({ sites, selectedId, onSelect }: SanctuaryMapProps) {
-  const status = useGoogleMaps();
+  const { status, ml } = useMapLibre();
   const { t, pick } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef(new Map<string, google.maps.Marker>());
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const markersRef = useRef(new Map<string, Marker>());
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
 
   useEffect(() => {
-    if (status !== "ready" || !containerRef.current || mapRef.current) return;
-    mapRef.current = new google.maps.Map(containerRef.current, {
-      center: KERALA_CENTER,
-      zoom: 8,
-      styles: SAHN_MAP_STYLES,
-      clickableIcons: false,
-      disableDefaultUI: true,
-      zoomControl: true,
-      gestureHandling: "greedy",
+    const container = containerRef.current;
+    if (!ml || !container) return;
+    const map = new ml.Map({
+      container,
+      style: BASEMAP_STYLE,
+      center: [KERALA_CENTER.lng, KERALA_CENTER.lat],
+      zoom: window.matchMedia("(min-width: 768px)").matches ? 7 : 6.4,
+      maxZoom: MAX_ZOOM,
+      attributionControl: { compact: true },
     });
-  }, [status]);
+    map.addControl(new ml.NavigationControl({ showCompass: false }), "bottom-right");
+    map.setPadding(overlayPadding());
+    mapRef.current = map;
+    const stopObserving = observeResize(map, container, () => map.setPadding(overlayPadding()));
+    const markers = markersRef.current;
+    return () => {
+      stopObserving();
+      markers.clear();
+      map.remove();
+      mapRef.current = null;
+    };
+  }, [ml]);
 
-  // Reconcile markers whenever the map becomes ready or the visible sites change.
+  // Reconcile pins whenever the map is ready or the visible sites / language change.
   useEffect(() => {
     const map = mapRef.current;
-    if (status !== "ready" || !map) return;
+    if (!ml || !map) return;
     const markers = markersRef.current;
-    const visible = new Set(sites.map((s) => s.id));
-
-    for (const [id, marker] of markers) {
-      if (!visible.has(id)) {
-        google.maps.event.clearInstanceListeners(marker);
-        marker.setMap(null);
-        markers.delete(id);
-      }
-    }
+    for (const marker of markers.values()) marker.remove();
+    markers.clear();
     for (const site of sites) {
-      const selected = site.id === selectedId;
-      let marker = markers.get(site.id);
-      if (!marker) {
-        marker = new google.maps.Marker({ position: { lat: site.lat, lng: site.lng }, map });
-        marker.addListener("click", () => onSelectRef.current(site.id));
-        markers.set(site.id, marker);
-      }
-      marker.setIcon(pinIcon(site.kind, selected));
-      marker.setTitle(pick(site.name));
-      marker.setZIndex(selected ? 1000 : 1);
+      const el = createPinElement(site.kind, pick(site.name), () => onSelectRef.current(site.id));
+      const marker = new ml.Marker({ element: el, anchor: "bottom" }).setLngLat([site.lng, site.lat]).addTo(map);
+      markers.set(site.id, marker);
     }
-  }, [status, sites, selectedId, pick]);
+  }, [ml, sites, pick]);
 
   useEffect(() => {
+    for (const [id, marker] of markersRef.current) {
+      const el = marker.getElement();
+      el.dataset["selected"] = String(id === selectedId);
+      el.style.zIndex = id === selectedId ? "10" : "";
+    }
     const map = mapRef.current;
     const site = sites.find((s) => s.id === selectedId);
-    if (!map || !site) return;
-    map.panTo({ lat: site.lat, lng: site.lng });
-    if ((map.getZoom() ?? 8) < 12) map.setZoom(12);
-  }, [selectedId, sites, status]);
+    if (map && site) map.easeTo({ center: [site.lng, site.lat], zoom: Math.max(map.getZoom(), 12), duration: 600 });
+  }, [selectedId, sites, ml, pick]);
 
-  if (status === "missing-key" || status === "error") {
+  if (status === "error") {
     return (
       <div className="courtyard-pattern flex h-full w-full items-center justify-center p-8">
         <div className="max-w-sm rounded-[14px] border bg-card/95 p-6 text-center shadow-float">
           <MapPinOff className="mx-auto size-6 text-primary" aria-hidden />
           <h2 className="mt-3 text-xl">{t("mapRestingTitle")}</h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            {status === "error" ? t("mapError") : t("mapRestingBody")}
-          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t("mapError")}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="relative h-full w-full">
+    <div className="absolute inset-0">
       {status === "loading" && <div className="courtyard-pattern absolute inset-0 animate-pulse" />}
+      {/* MapLibre forces position: relative on its container, so it fills this absolute wrapper. */}
       <div ref={containerRef} className="h-full w-full" aria-label={t("appName")} />
     </div>
   );

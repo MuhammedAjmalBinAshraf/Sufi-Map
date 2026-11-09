@@ -53,7 +53,7 @@ export function SiteDetail({ site, onBack }: { site: Site; onBack: () => void })
       <div className="mt-6 grid grid-cols-2 gap-2">
         <Button asChild>
           <a
-            href={`https://www.google.com/maps/dir/?api=1&destination=${site.lat},${site.lng}`}
+            href={`https://www.openstreetmap.org/directions?route=%3B${site.lat}%2C${site.lng}`}
             target="_blank"
             rel="noreferrer"
           >
