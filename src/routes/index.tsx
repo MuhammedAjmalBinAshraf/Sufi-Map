@@ -51,6 +51,7 @@ function Index() {
   const [kind, setKind] = useState<SiteKind | "all">("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [submitOpen, setSubmitOpen] = useState(false);
+  const [pendingContributeAfterAuth, setPendingContributeAfterAuth] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [sheetSnap, setSheetSnap] = useState<SheetSnap>("half");
@@ -124,6 +125,23 @@ function Index() {
     setSheetSnap("half");
   };
 
+  useEffect(() => {
+    if (user && pendingContributeAfterAuth) {
+      setPendingContributeAfterAuth(false);
+      setSubmitOpen(true);
+    }
+  }, [user, pendingContributeAfterAuth]);
+
+  const handleContributeClick = () => {
+    if (!user) {
+      toast.info(t("signInRequiredToContribute"));
+      setPendingContributeAfterAuth(true);
+      setAuthOpen(true);
+      return;
+    }
+    setSubmitOpen(true);
+  };
+
   const actions = (
     <div className="flex items-center gap-2">
       <Button
@@ -146,7 +164,7 @@ function Index() {
       <Button variant="outline" size="icon" onClick={() => setBadgesOpen(true)} aria-label={t("badges")}>
         <Award aria-hidden />
       </Button>
-      <Button onClick={() => setSubmitOpen(true)}>
+      <Button onClick={handleContributeClick}>
         <Plus aria-hidden />
         {t("contribute")}
       </Button>
@@ -243,7 +261,7 @@ function Index() {
               <Button variant="outline" size="icon" onClick={() => setBadgesOpen(true)} aria-label={t("badges")}>
                 <Award aria-hidden />
               </Button>
-              <Button size="icon" onClick={() => setSubmitOpen(true)} aria-label={t("contribute")}>
+              <Button size="icon" onClick={handleContributeClick} aria-label={t("contribute")}>
                 <Plus aria-hidden />
               </Button>
             </div>
@@ -281,7 +299,11 @@ function Index() {
         {body}
       </MobileSheet>
 
-      <SubmitDialog open={submitOpen} onOpenChange={setSubmitOpen} />
+      <SubmitDialog
+        open={submitOpen}
+        onOpenChange={setSubmitOpen}
+        onRequireAuth={() => setAuthOpen(true)}
+      />
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
       <BadgesSheet open={badgesOpen} onOpenChange={setBadgesOpen} />
       <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />

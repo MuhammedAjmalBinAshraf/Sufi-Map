@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Check, ShieldCheck } from "lucide-react";
+import { Check, Lock, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/lib/auth";
 import { useI18n, type I18nKey } from "@/lib/i18n";
 import { DISTRICT_KEYS, DISTRICTS, SITE_KINDS, type SiteKind } from "@/lib/sites";
 import { useSteward } from "@/lib/steward";
@@ -19,12 +20,52 @@ import { CoordinatePicker } from "./CoordinatePicker";
 
 const STEPS: I18nKey[] = ["step.place", "step.location", "step.source", "step.review"];
 
-export function SubmitDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+export function SubmitDialog({
+  open,
+  onOpenChange,
+  onRequireAuth,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  onRequireAuth?: () => void;
+}) {
   const { t, pick } = useI18n();
+  const { user } = useAuth();
   const { recordSubmission } = useSteward();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<SubmissionDraft>(EMPTY_DRAFT);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  if (!user) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-md p-6 text-center space-y-4">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Lock className="size-6" aria-hidden />
+          </div>
+          <DialogHeader className="space-y-2 text-center">
+            <DialogTitle className="text-xl font-serif">{t("signInRequired")}</DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              {t("signInToContributeDesc")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center gap-3 pt-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              {t("close")}
+            </Button>
+            <Button
+              onClick={() => {
+                onOpenChange(false);
+                onRequireAuth?.();
+              }}
+            >
+              {t("signIn")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const update = <K extends keyof SubmissionDraft>(key: K, value: SubmissionDraft[K]) => {
     setDraft((d) => ({ ...d, [key]: value }));

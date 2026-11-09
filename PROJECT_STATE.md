@@ -4,6 +4,7 @@
 - Lovable repository (`sufi-sanctuary-map`) synchronized into `master` and `lovable` branches.
 - Production live at https://sufi-map.vercel.app (deployment `dpl_GvNAF3LzM63AVBvYyT7jkLWcBFJR`).
 - Google OAuth and Email (signup/signin) authentication active via Supabase Auth.
+- Contribution workflow guarded: Sign-in required to submit sanctuaries (auto-redirects to sign-in dialog and resumes upon authentication).
 - Legal compliance pages live for Google Cloud OAuth verification:
   - Privacy Policy: https://sufi-map.vercel.app/privacy
   - Terms of Service: https://sufi-map.vercel.app/terms
