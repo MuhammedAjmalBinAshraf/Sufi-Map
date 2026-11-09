@@ -1,11 +1,10 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Lovable chat requests (draggable 3-state bottom sheet, mobile font scale, quote fade on map explore) fully synced and deployed.
-- Production live at https://sufi-map.vercel.app (deployment dpl_7cRCCHprQLy4TWX6FdFqFJPQSkjo from branch lovable).
-- Branch-specific preview at https://sufi-jes22d8a8-ajmalmohammed13166-1152s-projects.vercel.app.
-- 100% feature and design parity with Lovable sandbox.
-- Working tree clean, synced to GitHub master.
+- Sourced and synchronized `https://github.com/MuhammedAjmalBinAshraf/sufi-sanctuary-map.git` directly into `lovable` branch on `origin` (`acd1b04`).
+- Synced iOS mobile zoom prevention (`text-[16px]` inputs/textareas) and i18n collapse/expand translations into `master`.
+- Production live at https://sufi-map.vercel.app (deployment dpl_CuFDipVtPuxD4Pg9rWeyZ8JULfD2).
+- Both `origin/lovable` and `origin/master` fully up-to-date on GitHub.
 
 ## Done
 - Initialized Git repository and set safe directory rules.
@@ -40,12 +39,11 @@
 - Connected Vercel production deployment to GitHub repository for automated continuous deployment (CI/CD).
 
 ## In Progress
-- Vercel redeployment triggered by commit `7603a48`.
+- Completed all sync and deployment tasks.
 
 ## Next Up
-- Verify redesigned pins, card-lift, quote crossfade on live https://sufi-map.vercel.app.
 - Configure Supabase Auth redirect URLs in Supabase Dashboard (add `https://sufi-map.vercel.app/**`).
-- Continue Lovable iteration: mobile bottom sheet polish, smooth page transitions, RTL pin badge direction.
+- Add additional verified sanctuaries in West Malappuram with source citations.
 
 ## Decisions
 - **2026-11-08**: Standardized on Next.js 14 App Router with `next-intl` localized route grouping `[locale]` for English, Malayalam, and Arabic with RTL layout support.
@@ -66,6 +64,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-10 00:22**: Synced manual Lovable repo (`sufi-sanctuary-map.git`) to `lovable` branch on `origin/lovable` (commit `acd1b04`), ported iOS auto-zoom prevention and i18n collapse/expand translations to `master`, built and deployed to Vercel production (`https://sufi-map.vercel.app`, deployment `dpl_CuFDipVtPuxD4Pg9rWeyZ8JULfD2`).
+  - *Files touched*: `src/components/ui/input.tsx`, `src/components/ui/textarea.tsx`, `src/components/map/MapHomeClient.tsx`, `messages/en.json`, `messages/ml.json`, `messages/ar.json`, `PROJECT_STATE.md`.
+  - *Next*: Test live on devices.
 - **2026-11-10 00:00**: Deployed `lovable` branch to Vercel (`dpl_Dcgc8B911ZD4VqLw3hQZYPtDQ9yV` preview & `dpl_7cRCCHprQLy4TWX6FdFqFJPQSkjo` production). Production domain `sufi-map.vercel.app` now serves directly from the `lovable` branch build.
   - *Files touched*: `PROJECT_STATE.md`.
   - *Next*: Test live production app.
