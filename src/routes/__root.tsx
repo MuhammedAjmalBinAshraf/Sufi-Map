@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/lib/auth";
 import { I18nProvider } from "@/lib/i18n";
 import { PreferencesProvider } from "@/lib/preferences";
 import { StewardProvider } from "@/lib/steward";
@@ -134,13 +135,15 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <PreferencesProvider>
-          <StewardProvider>
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-            <Toaster position="top-center" />
-          </StewardProvider>
-        </PreferencesProvider>
+        <AuthProvider>
+          <PreferencesProvider>
+            <StewardProvider>
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+              <Toaster position="top-center" />
+            </StewardProvider>
+          </PreferencesProvider>
+        </AuthProvider>
       </I18nProvider>
     </QueryClientProvider>
   );

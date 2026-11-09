@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Award, MoonStar, PanelLeftClose, PanelLeftOpen, Plus, Settings } from "lucide-react";
+import { Award, MoonStar, PanelLeftClose, PanelLeftOpen, Plus, Settings, User } from "lucide-react";
 import { toast } from "sonner";
 
+import { AuthDialog } from "@/components/sufi/AuthDialog";
 import { BadgesSheet } from "@/components/sufi/BadgesSheet";
 import { LanguageToggle } from "@/components/sufi/LanguageToggle";
 import { MapControls } from "@/components/sufi/MapControls";
@@ -14,6 +15,7 @@ import { SiteDetail } from "@/components/sufi/SiteDetail";
 import { SiteFilters, SiteList } from "@/components/sufi/SiteList";
 import { SubmitDialog } from "@/components/sufi/SubmitDialog";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { calculateDistanceKm, type BasemapStyleId } from "@/lib/maplibre";
 import { shouldShowQuote, usePreferences } from "@/lib/preferences";
@@ -43,12 +45,14 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { t, lang, pick } = useI18n();
+  const { user } = useAuth();
   const mapRef = useRef<SanctuaryMapHandle>(null);
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<SiteKind | "all">("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [submitOpen, setSubmitOpen] = useState(false);
   const [badgesOpen, setBadgesOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const [sheetSnap, setSheetSnap] = useState<SheetSnap>("half");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -122,6 +126,20 @@ function Index() {
 
   const actions = (
     <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setAuthOpen(true)}
+        className={cn(
+          "h-9 rounded-[12px] text-xs font-medium border-border hover:bg-accent flex items-center gap-1.5 px-3",
+          user && "border-primary/50 bg-primary/5 text-primary",
+        )}
+      >
+        <User className="size-3.5 text-primary" aria-hidden />
+        <span className="truncate max-w-[110px]">
+          {user ? user.user_metadata?.full_name || user.email?.split("@")[0] || t("account") : t("signIn")}
+        </span>
+      </Button>
       <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)} aria-label={t("settings")}>
         <Settings aria-hidden />
       </Button>
@@ -209,6 +227,16 @@ function Index() {
           <div className="pointer-events-auto flex items-center justify-between gap-2 rounded-[14px] border bg-card/95 p-2 ps-3 shadow-float backdrop-blur">
             <Brand compact />
             <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setAuthOpen(true)}
+                aria-label={user ? t("account") : t("signIn")}
+                title={user ? t("account") : t("signIn")}
+                className={cn(user && "border-primary text-primary bg-primary/10")}
+              >
+                <User className="size-4" aria-hidden />
+              </Button>
               <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)} aria-label={t("settings")}>
                 <Settings aria-hidden />
               </Button>
@@ -254,6 +282,7 @@ function Index() {
       </MobileSheet>
 
       <SubmitDialog open={submitOpen} onOpenChange={setSubmitOpen} />
+      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
       <BadgesSheet open={badgesOpen} onOpenChange={setBadgesOpen} />
       <SettingsSheet open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
