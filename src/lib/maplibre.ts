@@ -33,10 +33,21 @@ export function loadMapLibre(): Promise<MapLibreModule> {
 }
 
 /** Keeps the map canvas matched to its box as the sidebar or bottom sheet resizes. */
-export function observeResize(map: MapLibre.Map, container: HTMLElement) {
-  const observer = new ResizeObserver(() => map.resize());
+export function observeResize(map: MapLibre.Map, container: HTMLElement, onResize?: () => void) {
+  const observer = new ResizeObserver(() => {
+    map.resize();
+    onResize?.();
+  });
   observer.observe(container);
   return () => observer.disconnect();
+}
+
+/** Keeps pins clear of the floating quote and the mobile bottom sheet. */
+export function overlayPadding(): MapLibre.PaddingOptions {
+  const desktop = window.matchMedia("(min-width: 768px)").matches;
+  return desktop
+    ? { top: 200, bottom: 32, left: 32, right: 32 }
+    : { top: 250, bottom: Math.round(window.innerHeight * 0.42) + 16, left: 24, right: 24 };
 }
 
 const KIND_LETTER: Record<SiteKind, string> = { maqam: "M", zawiya: "Z", dargah: "D", gathering: "G" };

@@ -4,7 +4,7 @@ import { MapPinOff } from "lucide-react";
 
 import { useMapLibre } from "@/hooks/use-maplibre";
 import { useI18n } from "@/lib/i18n";
-import { BASEMAP_STYLE, createPinElement, MAX_ZOOM, observeResize } from "@/lib/maplibre";
+import { BASEMAP_STYLE, createPinElement, MAX_ZOOM, observeResize, overlayPadding } from "@/lib/maplibre";
 import { KERALA_CENTER, type Site } from "@/lib/sites";
 
 interface SanctuaryMapProps {
@@ -29,13 +29,14 @@ export function SanctuaryMap({ sites, selectedId, onSelect }: SanctuaryMapProps)
       container,
       style: BASEMAP_STYLE,
       center: [KERALA_CENTER.lng, KERALA_CENTER.lat],
-      zoom: 7,
+      zoom: window.matchMedia("(min-width: 768px)").matches ? 7 : 6.4,
       maxZoom: MAX_ZOOM,
       attributionControl: { compact: true },
     });
     map.addControl(new ml.NavigationControl({ showCompass: false }), "bottom-right");
+    map.setPadding(overlayPadding());
     mapRef.current = map;
-    const stopObserving = observeResize(map, container);
+    const stopObserving = observeResize(map, container, () => map.setPadding(overlayPadding()));
     const markers = markersRef.current;
     return () => {
       stopObserving();
