@@ -2,7 +2,8 @@
 
 ## Current Status
 - Lovable chat requests (draggable 3-state bottom sheet, mobile font scale, quote fade on map explore) fully synced and deployed.
-- Production live at https://sufi-map.vercel.app (deployment dpl_Cw3rQ5pcQgmy6DXFVJWLM1Cn3DBH).
+- Production live at https://sufi-map.vercel.app (deployment dpl_7cRCCHprQLy4TWX6FdFqFJPQSkjo from branch lovable).
+- Branch-specific preview at https://sufi-jes22d8a8-ajmalmohammed13166-1152s-projects.vercel.app.
 - 100% feature and design parity with Lovable sandbox.
 - Working tree clean, synced to GitHub master.
 
@@ -65,6 +66,9 @@
 - None. Phase 1 web, database, storage, and deployment are live.
 
 ## Changelog
+- **2026-11-10 00:00**: Deployed `lovable` branch to Vercel (`dpl_Dcgc8B911ZD4VqLw3hQZYPtDQ9yV` preview & `dpl_7cRCCHprQLy4TWX6FdFqFJPQSkjo` production). Production domain `sufi-map.vercel.app` now serves directly from the `lovable` branch build.
+  - *Files touched*: `PROJECT_STATE.md`.
+  - *Next*: Test live production app.
 - **2026-11-09 23:56**: Created and pushed dedicated `lovable` branch to GitHub remote (`origin/lovable`) containing all Lovable changes, and documented direct Lovable GitHub connector setup for automated continuous sync.
   - *Files touched*: `PROJECT_STATE.md`.
   - *Next*: Connect Lovable GitHub connector on Lovable dashboard if automatic commit-on-chat is desired.
