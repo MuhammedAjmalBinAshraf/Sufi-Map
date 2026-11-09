@@ -32,5 +32,5 @@ export function snapSheet(height: number, viewportHeight: number, velocity = 0):
 /** Step one position up (+1) or down (-1), staying within peek..full. */
 export function stepSheet(current: SheetSnap, direction: 1 | -1): SheetSnap {
   const i = SHEET_ORDER.indexOf(current) + direction;
-  return SHEET_ORDER[Math.min(SHEET_ORDER.length - 1, Math.max(0, i))];
+  return SHEET_ORDER[Math.min(SHEET_ORDER.length - 1, Math.max(0, i))] ?? current;
 }
