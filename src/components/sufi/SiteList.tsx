@@ -30,7 +30,7 @@ export function SiteFilters({ query, onQueryChange, kind, onKindChange }: Omit<S
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder={t("searchPlaceholder")}
           aria-label={t("searchPlaceholder")}
-          className="h-11 bg-card ps-9 text-base"
+          className="h-11 bg-card ps-9 text-[16px] md:text-base"
         />
       </div>
       <ToggleGroup
