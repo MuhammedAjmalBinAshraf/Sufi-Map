@@ -104,30 +104,36 @@ const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function 
 
     const initialLng = selectedPlace ? selectedPlace.longitude : 75.9234;
     const initialLat = selectedPlace ? selectedPlace.latitude : 11.0489;
-    const tileUrl = TILE_URLS[basemapStyle] || TILE_URLS["sahn-warm"];
+    const customStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL;
+    const tileUrl =
+      (basemapStyle === "sahn-warm" && process.env.NEXT_PUBLIC_MAP_TILE_URL)
+        ? process.env.NEXT_PUBLIC_MAP_TILE_URL
+        : TILE_URLS[basemapStyle] || TILE_URLS["sahn-warm"];
+
+    const defaultRasterStyle: maplibregl.StyleSpecification = {
+      version: 8,
+      sources: {
+        "sufi-basemap": {
+          type: "raster",
+          tiles: [tileUrl],
+          tileSize: 256,
+          attribution: "&copy; OpenStreetMap & CartoDB",
+        },
+      },
+      layers: [
+        {
+          id: "sufi-basemap-layer",
+          type: "raster",
+          source: "sufi-basemap",
+          minzoom: 0,
+          maxzoom: 19,
+        },
+      ],
+    };
 
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
-      style: {
-        version: 8,
-        sources: {
-          "sufi-basemap": {
-            type: "raster",
-            tiles: [tileUrl],
-            tileSize: 256,
-            attribution: '&copy; OpenStreetMap & CartoDB',
-          },
-        },
-        layers: [
-          {
-            id: "sufi-basemap-layer",
-            type: "raster",
-            source: "sufi-basemap",
-            minzoom: 0,
-            maxzoom: 19,
-          },
-        ],
-      },
+      style: customStyleUrl || defaultRasterStyle,
       center: [initialLng, initialLat],
       zoom: 11.5,
       attributionControl: false,
