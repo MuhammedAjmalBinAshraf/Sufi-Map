@@ -103,7 +103,7 @@ export default async function LocaleLayout({
     >
       <body className="min-h-screen bg-sahn-bg text-sahn-ink font-sans antialiased selection:bg-sahn-green/15 selection:text-sahn-green">
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <div className="flex flex-col min-h-screen relative pb-16">
+          <div className="flex flex-col min-h-screen relative pb-16 md:pb-0">
             {children}
           </div>
         </NextIntlClientProvider>

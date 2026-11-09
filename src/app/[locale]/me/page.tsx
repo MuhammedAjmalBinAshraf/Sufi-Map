@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { BadgeProgressCard } from "@/components/badges/BadgeProgressCard";
 import { BottomNav } from "@/components/navigation/BottomNav";
+import { DesktopHeader } from "@/components/navigation/DesktopHeader";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -56,9 +57,12 @@ export default function MePage() {
   };
 
   return (
-    <div className="min-h-screen bg-sahn-bg pb-24">
-      {/* Top Floating App Bar */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-border px-4 py-3">
+    <div className="min-h-screen bg-sahn-bg pb-24 md:pb-12">
+      {/* Desktop Header */}
+      <DesktopHeader />
+
+      {/* Mobile Top Floating App Bar */}
+      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-border px-4 py-3">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -77,102 +81,118 @@ export default function MePage() {
         </div>
       </header>
 
-      <main className="max-w-md mx-auto px-4 pt-4 flex flex-col gap-4">
-        {user ? (
-          /* Logged In Contributor Profile Card */
-          <Card className="rounded-[14px] border-border bg-white shadow-sm overflow-hidden">
-            <CardContent className="p-4 flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center text-primary font-serif text-lg font-semibold">
-                    {(user.user_metadata?.full_name || user.email || "C")
-                      .substring(0, 1)
-                      .toUpperCase()}
-                  </div>
-                  <div>
-                    <h2 className="font-serif text-base font-bold text-foreground">
-                      {user.user_metadata?.full_name || "Blessed Contributor"}
-                    </h2>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
-                  </div>
-                </div>
-
-                <Badge
-                  variant="secondary"
-                  className="bg-primary/10 text-primary border-transparent text-[11px] font-medium px-2.5 py-0.5 rounded-full"
-                >
-                  Contributor
-                </Badge>
-              </div>
-
-              {/* Action buttons */}
-              <div className="grid grid-cols-2 gap-2 mt-1">
-                <Link href="/contribute">
-                  <Button
-                    size="sm"
-                    className="w-full h-9 rounded-[10px] bg-primary text-primary-foreground text-xs flex items-center justify-center gap-1.5"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Contribute</span>
-                  </Button>
-                </Link>
-
-                <Link href="/admin">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full h-9 rounded-[10px] border-border text-foreground text-xs flex items-center justify-center gap-1.5"
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-                    <span>Moderation</span>
-                  </Button>
-                </Link>
-              </div>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                className="mt-1 h-8 text-xs text-muted-foreground hover:text-destructive flex items-center justify-center gap-1.5"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>{t("signOut")}</span>
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          /* Guest Profile Prompt */
-          <Card className="rounded-[14px] border-border bg-white shadow-sm p-5 text-center flex flex-col items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-              <Compass className="w-6 h-6 animate-[spin_40s_linear_infinite]" />
-            </div>
-            <div>
-              <h2 className="font-serif text-lg font-semibold text-foreground">
-                Join Sufi Map as a Contributor
-              </h2>
-              <p className="text-xs text-muted-foreground mt-1 max-w-xs leading-relaxed">
-                Sign in with your email to submit places, suggest corrections, and earn everyday badges like Musafir, Misbah, and Hadiyya.
+      <main className="max-w-5xl mx-auto px-4 md:px-6 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          {/* Left Column on Desktop: Profile Info & Auth */}
+          <div className="md:col-span-5 flex flex-col gap-4">
+            <div className="hidden md:block">
+              <h1 className="font-serif text-2xl font-bold text-foreground">
+                Contributor Sanctuary
+              </h1>
+              <p className="text-xs text-muted-foreground mt-1">
+                Your sanctuary identity and stewardship profile
               </p>
             </div>
-            <Button
-              onClick={() => setAuthDialogOpen(true)}
-              className="h-10 px-6 rounded-[12px] bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 flex items-center gap-2 shadow-sm"
-            >
-              <LogIn className="w-4 h-4" />
-              <span>{t("signIn")} / {t("signUp")}</span>
-            </Button>
-          </Card>
-        )}
 
-        {/* Badges of Stewardship Progress Card */}
-        <BadgeProgressCard
-          stats={{
-            approvedEntriesCount: user ? 1 : 0,
-            sourcedEntriesCount: user ? 1 : 0,
-            verifiedOthersCount: 0,
-            isNazir: false,
-          }}
-        />
+            {user ? (
+              /* Logged In Contributor Profile Card */
+              <Card className="rounded-[14px] border-border bg-white shadow-sm overflow-hidden">
+                <CardContent className="p-5 flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center text-primary font-serif text-lg font-semibold">
+                        {(user.user_metadata?.full_name || user.email || "C")
+                          .substring(0, 1)
+                          .toUpperCase()}
+                      </div>
+                      <div>
+                        <h2 className="font-serif text-base font-bold text-foreground">
+                          {user.user_metadata?.full_name || "Blessed Contributor"}
+                        </h2>
+                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                      </div>
+                    </div>
+
+                    <Badge
+                      variant="secondary"
+                      className="bg-primary/10 text-primary border-transparent text-[11px] font-medium px-2.5 py-0.5 rounded-full"
+                    >
+                      Contributor
+                    </Badge>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    <Link href="/contribute">
+                      <Button
+                        size="sm"
+                        className="w-full h-9 rounded-[10px] bg-primary text-primary-foreground text-xs flex items-center justify-center gap-1.5"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Contribute</span>
+                      </Button>
+                    </Link>
+
+                    <Link href="/admin">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-9 rounded-[10px] border-border text-foreground text-xs flex items-center justify-center gap-1.5"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                        <span>Moderation</span>
+                      </Button>
+                    </Link>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSignOut}
+                    className="mt-1 h-8 text-xs text-muted-foreground hover:text-destructive flex items-center justify-center gap-1.5"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>{t("signOut")}</span>
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              /* Guest Profile Prompt */
+              <Card className="rounded-[14px] border-border bg-white shadow-sm p-6 text-center flex flex-col items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <Compass className="w-6 h-6 animate-[spin_40s_linear_infinite]" />
+                </div>
+                <div>
+                  <h2 className="font-serif text-lg font-semibold text-foreground">
+                    Join Sufi Map as a Contributor
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-xs leading-relaxed">
+                    Sign in with your email to submit places, suggest corrections, and earn everyday badges like Musafir, Misbah, and Hadiyya.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setAuthDialogOpen(true)}
+                  className="h-10 px-6 rounded-[12px] bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 flex items-center gap-2 shadow-sm"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>{t("signIn")} / {t("signUp")}</span>
+                </Button>
+              </Card>
+            )}
+          </div>
+
+          {/* Right Column on Desktop: Badges */}
+          <div className="md:col-span-7">
+            <BadgeProgressCard
+              stats={{
+                approvedEntriesCount: user ? 1 : 0,
+                sourcedEntriesCount: user ? 1 : 0,
+                verifiedOthersCount: 0,
+                isNazir: false,
+              }}
+            />
+          </div>
+        </div>
       </main>
 
       <AuthDialog

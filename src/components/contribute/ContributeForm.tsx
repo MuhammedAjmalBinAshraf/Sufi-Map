@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { PhotoUploader } from "@/components/contribute/PhotoUploader";
+import { CoordinatePickerModal } from "@/components/map/CoordinatePickerModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -45,6 +46,7 @@ export function ContributeForm({ initialType = "place", targetId = "" }: Contrib
   const [placeArea, setPlaceArea] = useState("West Malappuram");
   const [placeLat, setPlaceLat] = useState("11.0489");
   const [placeLng, setPlaceLng] = useState("75.9234");
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [placeHistory, setPlaceHistory] = useState("");
   const [placeEtiquette, setPlaceEtiquette] = useState("");
   const [placeEvents, setPlaceEvents] = useState("");
@@ -377,30 +379,56 @@ export function ContributeForm({ initialType = "place", targetId = "" }: Contrib
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-xs">{t("latitude")}</Label>
-                    <Input
-                      required
-                      type="number"
-                      step="any"
-                      value={placeLat}
-                      onChange={(e) => setPlaceLat(e.target.value)}
-                      className="h-10 text-xs rounded-[10px] mt-1"
-                    />
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <Label className="text-xs">{t("latitude")} & {t("longitude")}</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsPickerOpen(true)}
+                      className="h-6 px-2 text-[11px] text-primary border-primary/30 hover:bg-primary/10 rounded-[8px] flex items-center gap-1"
+                    >
+                      <MapPin className="w-3 h-3 text-primary" />
+                      Pick on Map
+                    </Button>
                   </div>
-                  <div>
-                    <Label className="text-xs">{t("longitude")}</Label>
-                    <Input
-                      required
-                      type="number"
-                      step="any"
-                      value={placeLng}
-                      onChange={(e) => setPlaceLng(e.target.value)}
-                      className="h-10 text-xs rounded-[10px] mt-1"
-                    />
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Input
+                        required
+                        type="number"
+                        step="any"
+                        value={placeLat}
+                        onChange={(e) => setPlaceLat(e.target.value)}
+                        placeholder="Latitude"
+                        className="h-10 text-xs rounded-[10px]"
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        required
+                        type="number"
+                        step="any"
+                        value={placeLng}
+                        onChange={(e) => setPlaceLng(e.target.value)}
+                        placeholder="Longitude"
+                        className="h-10 text-xs rounded-[10px]"
+                      />
+                    </div>
                   </div>
                 </div>
+
+                <CoordinatePickerModal
+                  open={isPickerOpen}
+                  onOpenChange={setIsPickerOpen}
+                  initialLat={parseFloat(placeLat) || 11.0489}
+                  initialLng={parseFloat(placeLng) || 75.9234}
+                  onSelectCoordinates={(lat, lng) => {
+                    setPlaceLat(lat.toFixed(6));
+                    setPlaceLng(lng.toFixed(6));
+                  }}
+                />
 
                 <div className="flex flex-col gap-1">
                   <Label className="text-xs">{t("shortHistory")}</Label>

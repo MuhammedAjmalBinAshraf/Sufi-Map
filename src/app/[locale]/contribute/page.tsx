@@ -3,6 +3,7 @@ import { ContributeForm } from "@/components/contribute/ContributeForm";
 import { RotatingQuote } from "@/components/contribute/RotatingQuote";
 import { BadgeProgressCard } from "@/components/badges/BadgeProgressCard";
 import { BottomNav } from "@/components/navigation/BottomNav";
+import { DesktopHeader } from "@/components/navigation/DesktopHeader";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
 import { SAMPLE_QUOTES } from "@/lib/sample-data";
 import { createClient } from "@/lib/supabase/server";
@@ -40,9 +41,12 @@ export default async function ContributePage({
   const targetId = (searchParams.correction_for || searchParams.person_id || "") as string;
 
   return (
-    <div className="min-h-screen bg-sahn-bg pb-24">
-      {/* Top Floating App Bar */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-border px-4 py-3">
+    <div className="min-h-screen bg-sahn-bg pb-24 md:pb-12">
+      {/* Desktop Header */}
+      <DesktopHeader />
+
+      {/* Mobile Top Floating App Bar */}
+      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-border px-4 py-3">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -61,22 +65,38 @@ export default async function ContributePage({
         </div>
       </header>
 
-      <main className="max-w-md mx-auto px-4 pt-4 flex flex-col gap-4">
-        {/* Rotating Wisdom & Kindness Quotation Card */}
-        <RotatingQuote quotes={quotes} />
+      <main className="max-w-5xl mx-auto px-4 md:px-6 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          {/* Left Column on Desktop: Wisdom Quotes & Badge Stewardship */}
+          <div className="md:col-span-5 flex flex-col gap-4 md:sticky md:top-20">
+            <div className="hidden md:block">
+              <h1 className="font-serif text-2xl font-bold text-foreground">
+                {t("contribute.title")}
+              </h1>
+              <p className="text-xs text-muted-foreground mt-1">
+                {t("contribute.subtitle")}
+              </p>
+            </div>
 
-        {/* Badges of Stewardship Progress Card */}
-        <BadgeProgressCard
-          stats={{
-            approvedEntriesCount: 1,
-            sourcedEntriesCount: 1,
-            verifiedOthersCount: 0,
-            isNazir: false,
-          }}
-        />
+            {/* Rotating Wisdom & Kindness Quotation Card */}
+            <RotatingQuote quotes={quotes} />
 
-        {/* Contribution Submission Tabs Form */}
-        <ContributeForm initialType={initialType} targetId={targetId} />
+            {/* Badges of Stewardship Progress Card */}
+            <BadgeProgressCard
+              stats={{
+                approvedEntriesCount: 1,
+                sourcedEntriesCount: 1,
+                verifiedOthersCount: 0,
+                isNazir: false,
+              }}
+            />
+          </div>
+
+          {/* Right Column on Desktop: Form */}
+          <div className="md:col-span-7">
+            <ContributeForm initialType={initialType} targetId={targetId} />
+          </div>
+        </div>
       </main>
 
       <BottomNav />

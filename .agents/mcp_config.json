@@ -9,6 +9,9 @@
         "shadcn@latest",
         "mcp"
       ]
+    },
+    "lovable": {
+      "url": "https://mcp.lovable.dev"
     }
   }
 }

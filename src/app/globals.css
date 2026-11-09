@@ -69,3 +69,33 @@
 [dir="rtl"] .font-serif {
   font-family: var(--font-arabic), "Amiri", serif;
 }
+
+/* MapLibre GL Container & Canvas Overrides */
+.maplibregl-map {
+  font-family: inherit;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.maplibregl-canvas-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.maplibregl-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  outline: none;
+}
+
+/* Custom Sanctuary Marker Styling */
+.sufi-pin-marker {
+  cursor: pointer;
+  z-index: 10;
+  will-change: transform;
+}
+
+.sufi-pin-marker:hover {
+  z-index: 25;
+}
+

@@ -1,7 +1,10 @@
 # PROJECT_STATE.md — Living State of Sufi Map
 
 ## Current Status
-- Phase 1 complete across all 6 steps. Interactive map home, trilingual support (en, ml, ar RTL), PostGIS & Supabase schema, contributor flows, living Sufi privacy controls, badge progression, quote management, and Vercel deployment assets are fully verified and committed.
+- Phase 1 with Responsive Desktop Web Design and In-App Map Setup & Settings is complete and verified.
+- Resolved MapLibre canvas visibility with absolute positioning, `ResizeObserver`, CartoDB Voyager warm basemap, and layer switcher.
+- Split-screen desktop layout (420px docked sanctuary sidebar + full-bleed map), top `DesktopHeader`, floating `MapControls`, and contributor `CoordinatePickerModal` fully operational.
+- Verified production build (`npm run build`) passing with zero errors across all routes.
 
 ## Done
 - Initialized Git repository and set safe directory rules.
@@ -22,14 +25,20 @@
 - Polished multilingual and bidirectional RTL layout support with localized metadata, language alternates, and Arabic Amiri / Malayalam fonts.
 - Built Web App Manifest (`manifest.json`) and SVG sanctuary icon (`public/icon.svg`).
 - Created Vercel deployment configuration (`vercel.json`) and production setup guide (`docs/DEPLOYMENT.md`).
+- Implemented responsive split-screen desktop layout (`MapHomeClient.tsx`) with 420px docked sanctuary sidebar, search, kind filter chips, and interactive list cards on the left, alongside full-bleed map on the right.
+- Created `DesktopHeader.tsx` navbar with sanctuary branding, active route highlighting, search bar, and locale switcher.
+- Diagnosed and fixed map visibility issue: wrapped `MapContainer` with `absolute inset-0`, added `ResizeObserver` for dynamic resizing, and switched default basemap to CartoDB Voyager tiles matching Sahn warm stone aesthetics.
+- Created `MapControls.tsx` floating control panel with zoom buttons, compass bearing reset, "Locate Me" geolocation, 4-tier basemap layer switcher (Sahn Warm, Standard OSM, Satellite Aerial, Topo Terrain), and quick jump region presets (Tirurangadi, Ponnani, Kondotty, Parappanangadi).
+- Created `CoordinatePickerModal.tsx` draggable map pin coordinate picker and integrated "Pick on Map" button directly into `ContributeForm.tsx`.
+- Updated Place (`/places/[id]`), Person (`/persons/[id]`), Gatherings (`/gatherings`), Contribute (`/contribute`), Me (`/me`), and Admin (`/admin`) pages to responsive two-column desktop layouts.
 - Verified production build and static page generation across all routes (`npm run build`).
 
 ## In Progress
-- Final user review of completed Phase 1 application.
+- Live manual testing and user review at `http://localhost:3000`.
 
 ## Next Up
-- Connect live Supabase project credentials in `.env.local` and deploy to Vercel.
-- Gather feedback from West Malappuram regional community members.
+- Gather user feedback on the desktop layout and map controls.
+- Connect production Supabase project keys in `.env.local` when ready.
 
 ## Decisions
 - **2026-11-08**: Standardized on Next.js 14 App Router with `next-intl` localized route grouping `[locale]` for English, Malayalam, and Arabic with RTL layout support.
@@ -40,11 +49,17 @@
 - **2026-11-08**: Explicit everyday naming for badges (*Musafir, Misbah, Hadiyya, Rafeeq, Nazir*) to ensure humble community stewardship without claiming or suggesting spiritual ranks.
 - **2026-11-08**: Multi-quote rotating banner with Amiri font and pause-on-hover to create a contemplative, sanctuary atmosphere without distracting motion.
 - **2026-11-08**: Progressive web manifest with theme color `#FAF9F4` and mobile standalone display for clear visibility under outdoor Kerala daylight.
+- **2026-11-09**: CartoDB Voyager default basemap: replaced plain OSM raster tiles with CartoDB Voyager tiles to guarantee CORS reliability across browsers and harmonize with the Sahn warm stone palette.
+- **2026-11-09**: Split-screen desktop architecture: docked 420px left sidebar for listings and search, giving the interactive map maximum canvas space while retaining mobile bottom sheet on small screens.
+- **2026-11-09**: Modal coordinate picker for contributors: enabled visual map coordinate selection with draggable marker to ensure accurate latitude/longitude entry without manual geo-lookup.
 
 ## Open Questions
-- None for Phase 1. Database schema and UI are ready for live deployment.
+- None for Phase 1. Database schema, UI, and desktop map controls are ready.
 
 ## Changelog
+- **2026-11-09**: Completed Web Design & Map Setup. Built responsive desktop split-screen layout, desktop header navbar, floating map controls with basemap switcher, geolocation, region presets, and coordinate picker modal integrated into contribute form. Fixed map visibility with ResizeObserver and CartoDB Voyager warm basemap. Polished Place, Person, Gatherings, Contribute, Me, and Admin pages for desktop viewports.
+  - *Files touched*: `src/app/globals.css`, `src/components/navigation/DesktopHeader.tsx`, `src/components/map/MapControls.tsx`, `src/components/map/CoordinatePickerModal.tsx`, `src/components/map/MapContainer.tsx`, `src/components/map/MapHomeClient.tsx`, `src/components/contribute/ContributeForm.tsx`, `src/app/[locale]/layout.tsx`, `src/app/[locale]/places/[id]/page.tsx`, `src/app/[locale]/persons/[id]/page.tsx`, `src/app/[locale]/gatherings/page.tsx`, `src/app/[locale]/contribute/page.tsx`, `src/app/[locale]/me/page.tsx`, `src/app/[locale]/admin/page.tsx`, `src/components/navigation/BottomNav.tsx`, `PROJECT_STATE.md`.
+  - *Next*: Live verification and user feedback.
 - **2026-11-08**: Completed Step 6. Multilingual & RTL polish, dynamic metadata per locale, web app manifest, security headers in vercel.json, deployment guide, and final production build verification.
   - *Files touched*: `src/app/[locale]/layout.tsx`, `public/manifest.json`, `public/icon.svg`, `vercel.json`, `docs/DEPLOYMENT.md`, `PROJECT_STATE.md`.
   - *Next*: Connect live credentials and deploy.
