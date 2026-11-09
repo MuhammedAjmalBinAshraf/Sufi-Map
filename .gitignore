@@ -25,6 +25,9 @@
 # Vercel
 .vercel
 
+# Supabase CLI temp files
+supabase/.temp/
+
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
