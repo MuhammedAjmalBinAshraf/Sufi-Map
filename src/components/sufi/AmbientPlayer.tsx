@@ -85,9 +85,13 @@ export function AmbientPlayer() {
     save({ muted: audio.muted });
   };
 
+  const audioSrc = qiraat.url.startsWith("http")
+    ? qiraat.url
+    : `https://id-preview--${qiraat.project_id}.lovable.app${qiraat.url}`;
+
   return (
     <div ref={panelRef} role="group" aria-label={t("qiraat")} className="fixed start-3 bottom-[max(5rem,calc(env(safe-area-inset-bottom)+4.5rem))] z-30 flex h-14 max-w-[calc(100vw-1.5rem)] items-center gap-2 rounded-[14px] border bg-card/95 px-2 ps-3 shadow-float backdrop-blur md:start-5 md:bottom-5">
-      <audio ref={audioRef} src={qiraat.url} loop preload="auto" onPlaying={() => { setPlaying(true); setFailed(false); }} onPause={() => setPlaying(false)} onError={() => { setFailed(true); setPlaying(false); }} />
+      <audio ref={audioRef} src={audioSrc} loop preload="auto" onPlaying={() => { setPlaying(true); setFailed(false); }} onPause={() => setPlaying(false)} onError={() => { setFailed(true); setPlaying(false); }} />
       <span aria-hidden="true" data-playing={playing && !muted} className="qiraat-wave flex h-5 w-5 shrink-0 items-center justify-center gap-0.5 text-primary">
         <span /><span /><span /><span />
       </span>
