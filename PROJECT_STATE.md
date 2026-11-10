@@ -2,7 +2,8 @@
 
 ## Current Status
 - Lovable repository (`sufi-sanctuary-map`) synchronized into `master` and `lovable` branches.
-- Production live at https://sufi-map.vercel.app (deployment `dpl_GvNAF3LzM63AVBvYyT7jkLWcBFJR`).
+- Production live at https://sufi-map.vercel.app (deployment `dpl_Ee3YNovkunyhizR6U9TbhyianVqu`).
+- Ambient background Qira'at (Surah An-Nur recitation) active across all pages with floating mini-player, soundwave equalizer, autoplay fallback on first gesture, and pause/mute persistence.
 - Google OAuth and Email (signup/signin) authentication active via Supabase Auth.
 - Contribution workflow guarded: Sign-in required to submit sanctuaries (auto-redirects to sign-in dialog and resumes upon authentication).
 - Legal compliance pages live for Google Cloud OAuth verification:
@@ -12,6 +13,9 @@
 - Legacy `/en`, `/ml`, `/ar` routes seamlessly redirect to `/`.
 
 ## Done
+- Integrated ambient background Qira'at player (`AmbientPlayer.tsx`) with animated soundwave visualizer, soft volume (35%), loop playback, device-local pause/mute persistence (`src/lib/audio.ts`), and autoplay fallback on first user interaction for strict browsers.
+- Uploaded 28MB WebM Surah An-Nur recitation asset through Lovable MCP, configured asset descriptor (`public/qiraat.webm.asset.json`), and verified streaming with HTTP 200 and CORS enabled.
+- Added 5 unit tests in `src/test/audio.test.tsx` verifying autoplay, gesture retry fallback, and preference persistence (all 22 unit tests passing).
 - Synchronized `sufi-sanctuary-map.git` as the canonical `master` branch.
 - Backed up previous Next.js codebase to branch `backup/nextjs-main`.
 - Added Map Controls toolbar (`MapControls.tsx`) with 4-tier basemap styles and regional hubs.
@@ -33,6 +37,8 @@
 - Expand sanctuary seed dataset for additional regions in Kerala.
 
 ## Changelog
+- **2026-11-10 03:00**: Completed ambient Qira'at audio setup via Lovable MCP. Added floating mini-player (`AmbientPlayer.tsx`) with animated wave icon, play/pause and mute/unmute buttons, trilingual i18n support, and test suite. Deployed to Vercel production (`dpl_Ee3YNovkunyhizR6U9TbhyianVqu`).
+  - *Files touched*: `public/qiraat.webm.asset.json`, `src/components/sufi/AmbientPlayer.tsx`, `src/lib/audio.ts`, `src/lib/i18n.tsx`, `src/routes/__root.tsx`, `src/styles.css`, `src/test/audio.test.tsx`, `package.json`.
 - **2026-11-10 02:15**: Added Privacy Policy (`/privacy`) and Terms of Service (`/terms`) pages for Google Cloud OAuth verification, linked from Settings and Auth dialogues, deployed to Vercel production.
   - *Files touched*: `src/routes/privacy.tsx`, `src/routes/terms.tsx`, `src/components/sufi/SettingsSheet.tsx`, `src/components/sufi/AuthDialog.tsx`, `src/routeTree.gen.ts`.
 - **2026-11-10 02:00**: Added user authentication (Google OAuth & Email signup/signin), SSR-safe Supabase client, and user account buttons in desktop and mobile headers.
